@@ -1,0 +1,450 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ビジュアル設計×AIコーディング 新規事業 検討レポート</title>
+	<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+	<script>
+		mermaid.initialize({ startOnLoad: true, theme: "base", themeVariables: {
+			primaryColor: "#15233b", primaryTextColor: "#e8edf5", primaryBorderColor: "#3a6ea5",
+			lineColor: "#7fa8d4", fontSize: "14px", fontFamily: "system-ui, sans-serif"
+		}});
+	</script>
+	<style>
+		:root {
+			--bg: #0e1726;
+			--panel: #15233b;
+			--panel2: #1b2d49;
+			--ink: #e8edf5;
+			--muted: #9fb2cc;
+			--accent: #f0a830;
+			--accent2: #4fd1c5;
+			--danger: #ff6b6b;
+			--ok: #5fd07a;
+			--line: #2c4368;
+		}
+		* { box-sizing: border-box; }
+		body {
+			margin: 0;
+			background: linear-gradient(160deg, #0b1320 0%, #0e1726 60%, #101d33 100%);
+			color: var(--ink);
+			font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", system-ui, sans-serif;
+			line-height: 1.85;
+			letter-spacing: .01em;
+		}
+		.wrap { max-width: 1040px; margin: 0 auto; padding: 56px 28px 96px; }
+		header.hero {
+			border-left: 5px solid var(--accent);
+			padding: 8px 0 8px 24px;
+			margin-bottom: 14px;
+		}
+		.kicker { color: var(--accent); font-size: 13px; letter-spacing: .22em; font-weight: 700; }
+		h1 { font-size: 30px; line-height: 1.4; margin: 10px 0 6px; }
+		.sub { color: var(--muted); font-size: 14px; }
+		.tldr {
+			background: linear-gradient(135deg, #1d2f4f, #16263f);
+			border: 1px solid var(--line);
+			border-radius: 14px;
+			padding: 24px 28px;
+			margin: 28px 0 40px;
+		}
+		.tldr h2 { margin: 0 0 12px; font-size: 17px; color: var(--accent2); }
+		.tldr p { margin: 6px 0; }
+		.tldr strong { color: var(--accent); }
+		section { margin: 0 0 46px; }
+		h2.sec {
+			font-size: 22px;
+			border-bottom: 2px solid var(--line);
+			padding-bottom: 10px;
+			margin: 0 0 22px;
+		}
+		h2.sec .num {
+			display: inline-block;
+			background: var(--accent);
+			color: #1a1205;
+			border-radius: 8px;
+			padding: 2px 12px;
+			margin-right: 12px;
+			font-size: 17px;
+			font-weight: 800;
+		}
+		h3 { font-size: 17px; color: var(--accent2); margin: 28px 0 10px; }
+		h4 { font-size: 15px; color: var(--ink); margin: 18px 0 6px; }
+		p { margin: 10px 0; }
+		.muted { color: var(--muted); }
+		.card {
+			background: var(--panel);
+			border: 1px solid var(--line);
+			border-radius: 12px;
+			padding: 20px 24px;
+			margin: 16px 0;
+		}
+		.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+		@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } .wrap { padding: 36px 16px 72px; } }
+		table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13.5px; }
+		th, td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+		th { background: var(--panel2); color: var(--accent2); font-weight: 700; }
+		td.bad { color: var(--danger); }
+		td.good { color: var(--ok); }
+		.mermaid { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 22px; margin: 18px 0; text-align: center; }
+		ul, ol { margin: 8px 0 8px; padding-left: 24px; }
+		li { margin: 6px 0; }
+		.tag { display: inline-block; font-size: 12px; padding: 2px 10px; border-radius: 999px; margin: 2px 4px 2px 0; }
+		.t-red { background: #3a1c22; color: #ff9aa2; border: 1px solid #5e2a33; }
+		.t-amber { background: #3a2e16; color: #f3c878; border: 1px solid #5e4a22; }
+		.t-green { background: #173324; color: #87e0a0; border: 1px solid #285a3c; }
+		.t-blue { background: #16293f; color: #8fc1f0; border: 1px solid #2c4d72; }
+		.callout {
+			border-left: 4px solid var(--accent);
+			background: #1a2438;
+			padding: 14px 20px;
+			border-radius: 0 10px 10px 0;
+			margin: 16px 0;
+		}
+		.callout.warn { border-left-color: var(--danger); background: #251720; }
+		.callout.ok { border-left-color: var(--ok); background: #15281d; }
+		.ref { font-size: 12.5px; color: var(--muted); }
+		.ref a { color: var(--accent2); text-decoration: none; }
+		footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); padding-top: 18px; margin-top: 40px; }
+		.score { font-size: 13px; }
+		.big { font-size: 15px; }
+	</style>
+</head>
+<body>
+<div class="wrap">
+
+	<header class="hero">
+		<div class="kicker">NEW BUSINESS / FEASIBILITY REVIEW</div>
+		<h1>ビジュアル設計 × AIコーディング 新規事業の<br>競合調査・ビジネスプラン・実装精査</h1>
+		<div class="sub">対象: VSCode/Cursor風UIで「コード構成のリアルタイム可視化＋ノード接続によるコード生成＋テスト/通信/シミュレーション検証」を実現するアプリ ／ 制約: 副業・一人開発・低サポート・年1000万円安定で本業化</div>
+	</header>
+
+	<div class="tldr">
+		<h2>結論サマリ（先出し・改訂版）</h2>
+		<p>① あなたの構想「マスター設計図＝実装＝テスト＝検証＝セキュリティ＝リアルタイムの統合体」は、<strong>概念としては新しくなく、組込み領域では成熟した一大分野「MBD/MBSE（モデルベース開発）」として既に存在</strong>します。代表格は Simulink/Stateflow＋Embedded Coder＋Polyspace＋Simulink Test（自動車・航空宇宙・防衛の20年来の標準）。<strong>「こういう統合物は無い」という前提は、汎用×AIネイティブの軸でのみ正しい</strong>。</p>
+		<p>② 本当に"無い"のは、次の<strong>4条件を同時に</strong>満たすもの：(a) 汎用LLMエージェント(Claude Code/Codex)が任意コードを書く<strong>AIネイティブ</strong>、(b) 制御則だけでなく通信/プロトコル/アプリを含む<strong>言語・ドメイン汎用</strong>、(c) 個人・中小が買える<strong>安価・軽量</strong>、(d) 検証/テスト/セキュリティ/リアルタイムを<strong>1モデルに統合</strong>。各社（Simulink系/SDD系Kiro・Tessl/Cursor系）は一部しか満たさない。</p>
+		<p>③ 勝ち筋は<strong>「Simulinkが弱い領域（汎用ファーム/プロトコル/通信）× LLMエージェント駆動 × 非MATLAB・安価」</strong>に絞った、AIエージェント向けビジュアル設計＝検証レイヤ。フルIDEは作らず VS Code拡張＋MCPサーバ。あなたの組込み専門性が参入障壁。</p>
+		<p>④ 年1000万円(≒$65k/年, 約$5.4K MRR)は到達圏内だが上位2〜3割側。法人少数・高単価が最有力。<strong>警告：MathWorks自身が2026年4月にMBSE×AIエージェント化へ動き出した</strong>＝窓は無限ではない。</p>
+	</div>
+
+	<!-- ============ 1 目的・課題 ============ -->
+	<section>
+		<h2 class="sec"><span class="num">1</span>目的・課題</h2>
+
+		<div class="grid2">
+			<div class="card">
+				<h4>誰が / 規模</h4>
+				<p>副業の一人開発者（あなた）。組込み/EMS/産業通信に深い実務経験。<br>目標規模: 年商1000万円を安定的に達成できれば本業化。</p>
+				<h4>必要機能（構想の正確な再定義）</h4>
+				<p class="muted" style="margin:4px 0 6px">＝バラバラの機能群ではなく「<strong>1枚のマスター設計図兼テスト管理画面</strong>」という単一の実体。</p>
+				<ul>
+					<li><strong>マスター設計図＝唯一の正</strong>：全体設計＋データフローを単一の真実とする</li>
+					<li><strong>任意ドリルダウン</strong>：システム→モジュール→変数→状態遷移→詳細設定まで階層的にモジュール化し、任意の粒度で表示/折りたたみ</li>
+					<li><strong>AIが確実・正確に実装</strong>：この図の通りにブレなくコード化（言語非依存が理想）</li>
+					<li><strong>同一画面で検証統合</strong>：テスト実行・動作確認・セキュリティチェック・リアルタイム表示までを管理</li>
+				</ul>
+			</div>
+			<div class="card">
+				<h4>現状（As-Is）の痛み</h4>
+				<ul>
+					<li>Claude Code/Codex 利用時、<strong>アーキテクチャや詳細処理構成をAIも人も正確に把握できない</strong></li>
+					<li>確認のたびに別ファイル/コンソール表示 → 毎回の<strong>認知負荷と作業時間</strong></li>
+					<li>実装のたびに内容が<strong>ブレる（drift）</strong></li>
+					<li>製品化・安定運用・セキュリティ管理の負担が大</li>
+				</ul>
+				<h4>理想（To-Be）</h4>
+				<p>設計＝単一の真実(Single Source of Truth)が可視化され、AIがそれに沿って一貫実装。検証まで同一画面で完結。</p>
+			</div>
+		</div>
+
+		<div class="callout">
+			痛みの本質は「IDEが無い」ことではなく、<strong>"設計意図"がAIエージェントと人間の間で共有・固定されない</strong>こと。これは業界用語で <span class="tag t-blue">implementation drift（実装ドリフト）</span> と呼ばれ、まさに2025–26年に各社が殺到している課題です。
+		</div>
+	</section>
+
+	<!-- ============ 2 制約条件 ============ -->
+	<section>
+		<h2 class="sec"><span class="num">2</span>制約条件と、その内部矛盾</h2>
+		<p>まず制約を額面通り受け入れた上で、<strong>制約同士が衝突している箇所</strong>を明示します。新規事業の成否はここの解消にかかります。</p>
+
+		<table>
+			<thead>
+				<tr><th style="width:22%">制約</th><th style="width:39%">含意</th><th style="width:39%">衝突する他の制約</th></tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>一人で開発（副業）</td>
+					<td>開発リソースは月数十時間。スコープは極小でなければ完成しない。</td>
+					<td class="bad">「フルIDE」「言語非依存」「シミュレーション全部入り」と真っ向衝突。これら単体でも各々が数十人年の事業。</td>
+				</tr>
+				<tr>
+					<td>ユーザー対応を極力なくす</td>
+					<td>完全セルフサーブ＋自動化。バグ対応・問い合わせが少ない設計が必須。</td>
+					<td class="bad">「言語非依存＝あらゆる言語/フレームワークの面倒を見る」はサポート爆発の典型。広いほどサポートは増える。</td>
+				</tr>
+				<tr>
+					<td>言語非依存</td>
+					<td>対応言語ごとにパーサ・型解析・コード生成・実行環境が必要。</td>
+					<td class="bad">一人開発・低サポートの両方と衝突。汎用ビジュアルPLが歴史的に失敗してきた最大要因でもある。</td>
+				</tr>
+				<tr>
+					<td>年1000万円で安定</td>
+					<td>$5.4K MRR 前後。解約率が低く、継続課金できる相手が必要。</td>
+					<td class="bad">開発者は「無料/OSS文化」が強く最も払わない層。広く薄い無料ツールでは到達しにくい。</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="callout warn">
+			<strong>重要な気づき:</strong> 「言語非依存・全機能・低サポート・一人」は<strong>同時には満たせません</strong>。逆に言えば、<strong>特化（言語/ドメインを絞る）こそが、低サポートと一人開発を成立させる唯一の道</strong>です。絞り込みは妥協ではなく必須条件です。
+		</div>
+	</section>
+
+	<!-- ============ 3 調査結果（競合） ============ -->
+	<section>
+		<h2 class="sec"><span class="num">3</span>調査結果：競合マップ</h2>
+		<p>あなたの構想は、機能を分解すると<strong>6つの既存カテゴリ</strong>にまたがります。占有状況を下図に示します。<strong>最重要は⑥のMBD/MBSE</strong>＝あなたの「統合体」を既に実現している成熟分野です。</p>
+
+		<div class="mermaid">
+flowchart TB
+	L1["① 汎用ビジュアルPL（言語非依存でコード化を標榜）<br>Blueprints・Node-RED・Scratch/Blockly・TouchDesigner<br>→ 特定領域のみ成功・汎用は歴史的に繰返し失敗"]
+	L2["② コード可視化（既存コード→図／逆方向）<br>CodeSee・Sourcetrail（開発終了）・Understand・CodeScene・Greptile<br>→ 可視化だけでは収益化が難しい歴史"]
+	L3["③ 仕様駆動開発SDD（実装ドリフトに直球）<br>GitHub Spec Kit・AWS Kiro・Tessl（125M調達）・Claude Code Skills 他<br>→ 2025-26 超激戦・但しテキスト仕様/Web中心"]
+	L4["④ ビジュアル設計⇔実コード双方向 ＋ AI生成<br>Atlarix・Eraser・D2 Studio・Cloudairy<br>→ 新興だが先行者あり（空白ではない）"]
+	L6["⑥ MBD/MBSE＝あなたの統合体そのもの【最重要】<br>Simulink/Stateflow＋Embedded Coder＋Polyspace＋Test・Cameo（SysML）・SCADE<br>→ マスター図→生成→テスト→検証→セキュリティを既に実現。但し決定論生成/制御則特化/高価/MATLAB依存"]
+	GAP["★空白＝あなたの楔★<br>AIネイティブ × 汎用コード（プロトコル/通信） × 安価・軽量 × 検証統合<br>→ 誰も4条件を同時には満たさない"]
+	L1 --> L2 --> L3 --> L4 --> L6 --> GAP
+	classDef hot fill:#3a2436,stroke:#a8557f,color:#f3c0dd;
+	classDef warn fill:#3a2e16,stroke:#a88a3a,color:#f3d896;
+	classDef king fill:#3a2a16,stroke:#f0a830,color:#f7d79a;
+	classDef gap fill:#16332a,stroke:#5fd07a,color:#a8f0c0;
+	class L3,L4 hot;
+	class L1,L2 warn;
+	class L6 king;
+	class GAP gap;
+		</div>
+
+		<h3>① 汎用ビジュアルプログラミング言語</h3>
+		<p>ノード接続でソフトを組む発想は新しくありません。<strong>成功例はすべて"特定ドメインに特化"したもの</strong>です：ゲームの Unreal Blueprints、IoT/フローの Node-RED、教育の Scratch/Blockly、メディアアートの TouchDesigner、MLパイプラインの Kedro。<br>一方、<strong>「あらゆる汎用ソフトをノードで」という挑戦は数十年にわたり繰り返し失敗</strong>しています。理由は明快で、複雑なロジックではテキストの方が情報密度・差分管理(diff)・大規模化・検索性で圧倒的に優れるためです。あなたの構想の核（言語非依存の汎用ビジュアル）は、最も墓場の多い領域です。</p>
+
+		<h3>② コード可視化ツール（コード→図）</h3>
+		<p>既存コードを解析して依存関係・呼び出しグラフを自動描画する層。<strong>CodeSee</strong>（自動生成・自己更新マップ）、<strong>Understand</strong>、<strong>CodeScene</strong>、<strong>Greptile</strong>（構文木・呼び出しグラフのインデックス）など。ただし象徴的なのが <strong>Sourcetrail</strong> ＝高評価だったが<strong>開発終了しOSS化</strong>、CodeSee も縮小傾向。「可視化を見せるだけ」では継続課金に結びつきにくいという市場の教訓があります。あなたの構想は「図→コード」「双方向」なので①寄りですが、この層の収益化難も頭に入れるべきです。</p>
+
+		<h3>③ 仕様駆動開発(SDD) ― あなたの課題のド真ん中・最激戦</h3>
+		<p>「AIエージェントが設計を把握できず実装がブレる」を解く方法論として、2025年に <span class="tag t-blue">vibe coding</span> の限界（大規模で破綻）への反動として急成長。<strong>仕様(spec)を真実とし、コードは生成物</strong>とみなす考え方です。プレイヤーが一気に出揃いました：</p>
+		<table>
+			<thead><tr><th>プレイヤー</th><th>形態</th><th>特徴</th></tr></thead>
+			<tbody>
+				<tr><td>GitHub Spec Kit</td><td>OSS CLI</td><td>モデル非依存・スター多数。Specify→Plan→Tasks→Implement の4フェーズ。</td></tr>
+				<tr><td>AWS Kiro</td><td>VS CodeベースIDE</td><td>Spec Mode内蔵、spec↔コードのdrift検出。steering files(product/structure/tech)。</td></tr>
+				<tr><td>Tessl</td><td>spec-as-source 基盤</td><td>Snyk創業者。<strong>$125M調達・$500M+評価</strong>。言語非依存、MCP対応エージェント(Claude Code/Cursor等)に仕様駆動を教える。</td></tr>
+				<tr><td>Claude Code Skills / Cursor Plan / OpenSpec / BMAD / Google Antigravity</td><td>各社方言</td><td>主要AIコーディング各社が"自分流SDD"を実装済み。</td></tr>
+			</tbody>
+		</table>
+		<div class="callout warn">この層は<strong>資金力のある巨人が真正面から殺到</strong>。一人開発で「汎用SDDの本流」を正面から取りに行くのは不利。ただし<strong>全社が"テキスト仕様・Web/バックエンド中心"</strong>であり、ビジュアルと特定ドメイン(組込み)は手薄＝ここが隙間。</div>
+
+		<h3>④ ビジュアル設計⇔実コード双方向＋AI ― あなたの狙う交点（新興・先行者あり）</h3>
+		<p>2025–26に、あなたの構想に酷似した試みが既に複数登場しています。<strong>「空白の市場」という前提は誤り</strong>と認識すべきです。</p>
+		<ul>
+			<li><strong>Atlarix</strong>：React Flow製の Blueprint モードでアーキテクチャをドラッグ＆ドロップ設計し、<strong>「望ましい状態(Blueprint)」と「実コード(Live)」を比較してAI生成</strong>。"architecture-driven development" を標榜。あなたの構想とほぼ同一思想。</li>
+			<li><strong>Eraser</strong>：diagram-as-code＋AI、リポジトリ同期で図とコードを共進化。</li>
+			<li><strong>D2 Studio (Terrastruct)</strong>：テキスト⇔ビジュアルの<strong>双方向編集</strong>、ソフトアーキ専用レイアウトエンジン。</li>
+			<li><strong>Cloudairy</strong>：コード⇔図の two-way sync、AIアーキ図生成。</li>
+		</ul>
+
+		<h3>⑥ MBD/MBSE ― あなたの「統合体」を既に実現している最重要既存分野</h3>
+		<p>ここが今回の核心の修正点です。「マスター図→実装→テスト→検証→セキュリティ→リアルタイム」を一体化した製品は<strong>既に存在し、しかも成熟</strong>しています。あなたの本職＝組込みでは、その代表が <strong>MathWorks の Model-Based Design</strong> です。</p>
+		<table>
+			<thead><tr><th style="width:26%">あなたの要件</th><th>既存の実現（Simulink系）</th></tr></thead>
+			<tbody>
+				<tr><td>マスター視覚モデル＋任意ドリルダウン</td><td>Simulinkブロック図＋Stateflow状態機械。サブシステム/モデル参照で階層化＝モジュール・変数・状態遷移の任意表示。</td></tr>
+				<tr><td>図の通りに確実に実装</td><td>Embedded Coder がモデルから C/C++ を生成。シミュレーション結果とビット精度で一致（決定論的）。</td></tr>
+				<tr><td>テスト実行・動作確認</td><td>シミュレーション＋ MIL/SIL/PIL/HIL テスト、Simulink Test、関数レベルプロファイリング。</td></tr>
+				<tr><td>セキュリティチェック</td><td>Polyspace がバッファオーバーフロー等の脆弱性の不在を証明し、該当ブロックまでトレース。MISRA C/CERT C/CWE・ISO 26262・DO-178準拠。</td></tr>
+				<tr><td>リアルタイム表示・実機</td><td>dSPACE等での実機リアルタイム実行、要件→モデル→コード→テストのトレーサビリティ。</td></tr>
+			</tbody>
+		</table>
+		<p>SysML系（Cameo/Magic）、安全認証系（Ansys SCADE）も同系統です。<strong>つまり「統合体は無い」のではなく、「組込みでは20年来の標準（自動車・航空宇宙・防衛）」が正解</strong>。事業を語る際は必ずここを起点に差別化する必要があります。</p>
+
+		<h3>では本当の空白はどこか ― あなたの製品 vs Simulink/MBD</h3>
+		<p>Simulink系が満たさない4点の交点が、唯一の勝ち筋です。下表が差別化マトリクスです。</p>
+		<table>
+			<thead><tr><th style="width:22%">軸</th><th style="width:39%">Simulink / MBD（既存王者）</th><th style="width:39%">あなたの製品（狙う楔）</th></tr></thead>
+			<tbody>
+				<tr><td>実装エンジン</td><td class="bad">決定論的ルールベース生成（制約モデル言語）</td><td class="good">汎用LLMエージェント(Claude Code/Codex)が任意コード生成＝AIネイティブ</td></tr>
+				<tr><td>得意ドメイン</td><td class="bad">制御則・信号処理・データフロー中心。通信スタック/プロトコル/アプリは苦手</td><td class="good">プロトコル状態機械・通信(Modbus/LwIP)・IoT接続など"Simulinkが弱い汎用ファーム"</td></tr>
+				<tr><td>価格・重量</td><td class="bad">1席 年数十万〜数百万円・エンタープライズ・重い</td><td class="good">VS Code拡張＋MCP・個人/中小が買える安価・軽量</td></tr>
+				<tr><td>エコシステム</td><td class="bad">MATLAB依存・閉鎖的</td><td class="good">非MATLAB・既存IDE/Git/CIにそのまま乗る</td></tr>
+				<tr><td>検証統合</td><td class="good">成熟（Polyspace/Test）</td><td>★ここは敬意を払い"良いとこ取り"。drift検出＋静的解析＋テスト緑化までをAIループに統合</td></tr>
+			</tbody>
+		</table>
+		<div class="callout warn">
+			<strong>最大のリスク＝タイミング：</strong> MathWorks自身が2026年4月に「MBSE×エージェントAI」の検証を開始。<strong>王者がAIネイティブ化に動き出した</strong>。窓は無限ではないため、彼らが本気で取りに来ない領域（汎用ファーム/プロトコル × 非MATLAB × 安価）に素早く楔を打つ必要がある。
+		</div>
+	</section>
+
+	<!-- ============ 4 検討・提案 ============ -->
+	<section>
+		<h2 class="sec"><span class="num">4</span>検討・提案：リポジショニング</h2>
+		<p>当初構想を捨てるのではなく、<strong>制約に適合する形へ"絞る"</strong>のが提案の核です。3案を比較し、<strong>案Aを推奨</strong>します。</p>
+
+		<table>
+			<thead><tr><th style="width:20%">案</th><th>内容</th><th style="width:14%">一人適合</th><th style="width:14%">参入障壁</th><th style="width:14%">収益安定</th></tr></thead>
+			<tbody>
+				<tr>
+					<td><strong>A（推奨）<br>組込み特化レイヤ</strong></td>
+					<td>組込み/産業プロトコル(Modbus, 状態機械, RTOSタスク, 周辺接続)に特化した、<strong>AIエージェント向けビジュアル設計レイヤ</strong>。フルIDEを作らず VS Code/Cursor拡張＋MCPサーバ。設計を真実とし Claude Code/Codex を一貫制御。</td>
+					<td class="good">高</td>
+					<td class="good">高<br>(あなたの専門性)</td>
+					<td class="good">中〜高</td>
+				</tr>
+				<tr>
+					<td>B<br>汎用SDDの薄いビジュアル版</td>
+					<td>言語/ドメインを絞らず、SDDにビジュアルを足した拡張。</td>
+					<td class="bad">低</td>
+					<td class="bad">低<br>(巨人と正面衝突)</td>
+					<td>低〜中</td>
+				</tr>
+				<tr>
+					<td>C<br>受託/コンサル併用</td>
+					<td>CCAF的なAIエージェント運用設計を受託＋小ツール販売。</td>
+					<td>中</td>
+					<td class="good">高</td>
+					<td class="good">高<br>(但し労働集約)</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="callout ok">
+			<strong>なぜ案A（組込み特化）か</strong>
+			<ul style="margin-top:6px">
+				<li><strong>競合の死角:</strong> SDD/ビジュアル系の全プレイヤーは Web・バックエンド・クラウド前提。<strong>組込み/ファームウェアは誰も本気で見ていない</strong>。</li>
+				<li><strong>あなたの希少資産が障壁になる:</strong> STM32・FreeRTOS・LwIP・Modbus・EMS の実務知は、資金で買えない参入障壁。汎用では無意味なこの経験が、特化では決定的優位。</li>
+				<li><strong>このドメインは本質的にビジュアル:</strong> ファームは元々「状態機械・タスク間通信・周辺ペリフェラル接続・レジスタマップ」＝<strong>Visio/ADS的な図がそのまま設計言語</strong>。汎用ソフトと違い、ビジュアル化が自然で価値が高い。</li>
+				<li><strong>言語問題が消える:</strong> 対象を実質 C/C++/Rust に絞れるため「言語非依存」の悪夢を回避できる。</li>
+				<li><strong>低サポートが成立:</strong> 範囲が狭い＝サポート面が小さい。買い手は法人エンジニアで「払う文化」がある（個人開発者より単価高・解約率低）。</li>
+			</ul>
+		</div>
+
+		<h3>推奨プロダクト像（案A）の最小アーキテクチャ</h3>
+		<p>フルIDEは作りません。<strong>既存IDE(VS Code/Cursor)の上に"設計の層"を被せ、AIエージェントをMCP経由で操る</strong>のが鍵です。</p>
+
+		<div class="mermaid">
+flowchart LR
+	DEV["開発者<br>（最初のユーザー＝あなた自身）"]
+	subgraph EXT["VS Code / Cursor 拡張（フルIDEは作らない）"]
+		CANVAS["ビジュアル設計キャンバス<br>状態機械 / RTOSタスク /<br>周辺接続 / Modbusレジスタマップ"]
+		SPEC["構造化スペック<br>YAML / Markdown<br>＝ 単一の真実"]
+	end
+	MCP["MCPサーバ<br>スペック⇔エージェント仲介"]
+	AGENT["Claude Code / Codex"]
+	CODE["実コード<br>C / C++ / Rust"]
+	DEV --> CANVAS
+	CANVAS <--> SPEC
+	SPEC <--> MCP
+	MCP <--> AGENT
+	AGENT --> CODE
+	CODE -. "drift検出: 実装が設計から逸れたら警告" .-> SPEC
+	classDef core fill:#16293f,stroke:#4fd1c5,color:#cfeefa;
+	class CANVAS,SPEC core;
+		</div>
+
+		<h3>段階リリース（一人で完走できる粒度）</h3>
+		<ol>
+			<li><strong>v0 “ドッグフード”:</strong> まず<strong>自分のEnergyBox開発</strong>で使う最小ツールを作る。状態機械＋Modbusマップをビジュアル定義→YAMLスペック出力→Claude Code に食わせる MCP。これだけで自分の認知負荷は即下がる（=最初の検証）。</li>
+			<li><strong>v1 公開:</strong> VS Code Marketplace に拡張として公開。組込み開発者コミュニティ(HN, Reddit r/embedded, X)で build-in-public。無料コア＋有料(チーム/同期/drift検出)。</li>
+			<li><strong>v2 収益化:</strong> 法人向け：Modbus/CANプロファイル、規格テンプレート(機能安全の設計トレース)など"払う理由"を上に積む。</li>
+		</ol>
+
+		<div class="callout warn">
+			<strong>実装精査での赤信号（当初構想の難所）:</strong>
+			<ul style="margin-top:6px">
+				<li><strong>双方向同期(コード⇔図)は最難関。</strong> 図→コードは比較的容易だが、人が書いたコードを図に正確に戻す逆方向は、AST解析・意味解析が必要で破綻しやすい。<strong>v0では"図→スペック→生成"の片方向＋drift"検出"のみ</strong>に割り切る。</li>
+				<li><strong>シミュレーション/通信可視化は v0スコープから外す。</strong> これは将来の有料機能候補に温存。最初に入れると完成しない。</li>
+				<li><strong>「リアルタイム全構成可視化」は重い。</strong> 全コード自動解析でなく、<strong>"設計した部分だけ"を可視化</strong>する（設計起点）方が軽く・一貫し・差別化になる。</li>
+			</ul>
+		</div>
+	</section>
+
+	<!-- ============ 5 収益性 ============ -->
+	<section>
+		<h2 class="sec"><span class="num">5</span>収益性の現実性（年1000万円の検証）</h2>
+		<p>目標 ¥10M/年 ≒ <strong>約$65k/年 ≒ 約$5.4K MRR</strong>（為替¥155前提・概算）。micro-SaaS の実データに照らします。</p>
+
+		<div class="grid2">
+			<div class="card">
+				<h4>micro-SaaS の分布（2025–26実データ）</h4>
+				<ul>
+					<li><span class="t-red tag">30–40%</span> $1K MRR 未満で頓挫</li>
+					<li><span class="t-amber tag">~50%</span> $1K–$10K MRR でプラトー（＝ライフスタイル帯）</li>
+					<li><span class="t-green tag">~20%</span> $5K–$20K MRR：給与代替に到達</li>
+					<li><span class="t-blue tag">~5–10%</span> $20K MRR超</li>
+				</ul>
+				<p class="muted big">目標の $5.4K MRR は「ライフスタイル帯の上端〜給与代替帯の入口」。<strong>到達は非現実的ではないが、上位2〜3割側</strong>。</p>
+			</div>
+			<div class="card">
+				<h4>追い風 / 向かい風</h4>
+				<p><span class="t-green tag">追い風</span></p>
+				<ul>
+					<li>技術系創業者は開発コストが低く有利</li>
+					<li>US市場は1顧客あたり2–3倍払う（US$99 ≫ アジア$29）</li>
+					<li>コンテンツ＋コミュニティ(HN/Reddit/IndieHackers)でCAC $0–$40 と低い</li>
+					<li>粗利70–90%（人件費ゼロ）</li>
+				</ul>
+				<p><span class="t-red tag">向かい風</span></p>
+				<ul>
+					<li>開発者向けは「無料/OSS文化」で最も払わない層</li>
+					<li>SDD領域は資金潤沢な巨人が席巻</li>
+					<li>有機的成長は6–12か月の助走が必要</li>
+				</ul>
+			</div>
+		</div>
+
+		<h4>到達シナリオ例（案A・法人寄り価格）</h4>
+		<table>
+			<thead><tr><th>価格</th><th>必要有料顧客数で$5.4K MRR</th><th>現実性メモ</th></tr></thead>
+			<tbody>
+				<tr><td>$15/月(個人)</td><td>約360人</td><td class="bad">開発者個人360課金は重い。解約も多い。</td></tr>
+				<tr><td>$49/月(プロ)</td><td>約110人</td><td>build-in-publicで数年かければ射程。</td></tr>
+				<tr><td>$199/月(チーム/法人)</td><td>約27社</td><td class="good">組込み法人27社なら最も現実的。単価高・解約低。</td></tr>
+			</tbody>
+		</table>
+		<div class="callout ok"><strong>含意:</strong> 「個人開発者に薄く広く」より<strong>「組込み法人/チームに少数・高単価」</strong>が、一人・低サポート・1000万円の3条件を最も同時に満たす。価格戦略の面でも案Aが整合的。</div>
+	</section>
+
+	<!-- ============ 6 結論 ============ -->
+	<section>
+		<h2 class="sec"><span class="num">6</span>結論と次の一手</h2>
+		<div class="card">
+			<ol class="big">
+				<li><strong>「統合体は存在しない」は不正確。</strong> マスター図→実装→テスト→検証→セキュリティの統合は、組込みでは <strong>MBD/MBSE（Simulink系）として20年来成熟</strong>。概念の市場性はむしろ実証済み。</li>
+				<li><strong>本当の空白は4条件の交点：AIネイティブ × 汎用コード(プロトコル/通信) × 安価軽量 × 検証統合。</strong> Simulink系もSDD系もCursor系も、一部しか満たさない。ここだけが楔。</li>
+				<li><strong>推奨は案A：Simulinkが弱い"汎用ファーム/プロトコル"に絞った、AIエージェント向けビジュアル設計＝検証レイヤ（VS Code拡張＋MCP）。</strong> あなたの組込み専門性＝唯一の参入障壁。MBDという参照アーキの"良いとこ取り＋AI再発明"ができる。</li>
+				<li><strong>収益は法人少数・高単価（$199/月×27社級）が最有力。</strong></li>
+				<li><strong>タイミングが鍵。</strong> MathWorksが2026年4月にMBSE×AIエージェント化へ着手＝王者参入の前に楔を打つ必要。</li>
+			</ol>
+		</div>
+
+		<div class="callout">
+			<strong>今週できる最小検証（コストほぼゼロ）:</strong>
+			<ol style="margin-top:6px">
+				<li>自分のEnergyBox開発で、状態機械＋Modbusマップを1枚の図で定義→YAML化→Claude Codeに渡す、を手作業で1回やってみる（ツール化前の"人力プロトタイプ"）。これで効果を体感・計測。</li>
+				<li><strong>Simulink/Stateflow＋Embedded Coderを実際に評価</strong>し、あなたのEnergyBox（LwIP/Modbus/Azure）で<strong>「Simulinkでは作れない/割に合わない部分」</strong>を箇条書き化（＝差別化仕様書の中核）。併せて Atlarix / Kiro / Eraser も触る。</li>
+				<li>r/embedded 等で「AIエージェントで組込み開発する時、設計ドリフトに困ってる人いる?」と問いかけ、痛みの実在を確認（landing page＋20登録が検証目安）。</li>
+			</ol>
+		</div>
+
+		<p class="muted">※ 本レポートは事実確認のためWeb調査を実施しています。市場・資金調達・製品仕様は変化が速いため、意思決定前に各社最新情報の再確認を推奨します。投資・法務に関わる判断は専門家への確認を。</p>
+	</section>
+
+	<footer>
+		<div class="ref">
+			主な参照: MathWorks公式（Embedded Coder / Polyspace / Simulink Test / Stateflow）、MathWorks "MBSE and Agentic AI"(2026-04)、Caltech CTME・ThunderGraph・MBSE Solutions（AI×MBSE/SysML v2）、Augment Code / BCMS（SDD比較）、morphllm・dplooy（spec-driven development）、Medium(Atlarix)・Cloudairy（ビジュアル⇔コード）、HashDork・Developex（コード可視化, Sourcetrail終了）、TechTarget・Checkmarx（AI検証ギャップ・テスト/appsec）、Indie Hackers系（micro-SaaS収益分布）。<br>
+			作成日: 2026-05-25（改訂版・MBD/MBSE軸を追加） ／ 検討対象: 副業・一人開発の新規SaaS事業構想
+		</div>
+	</footer>
+
+</div>
+</body>
+</html>
