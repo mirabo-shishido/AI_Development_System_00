@@ -445,6 +445,10 @@ flowchart TB
 	class SSOT,P1,P2,P3,P4 core;
 		</div>
 
+		<div class="callout ok">
+			<strong>🖥 動く画面イメージ（インタラクティブ・モックアップ）:</strong> 同梱の <a href="cockpit_mockup.html" style="color:var(--accent2)"><strong>cockpit_mockup.html</strong></a> をブラウザで開くと、EnergyBox（Modbus/FreeRTOS/LwIP）の実例で本ダッシュボードを操作できる。<strong>「▶ シナリオ実演」</strong>で「CCAFが古いルール#4を適用→telemetryが仕様(60s)からdrift→検出→仕様に合わせて修正→テスト緑化」までが再生され、構造・仕様・ルールカード・テスト・CCAFデバッグの5ペインが単一ソースから連動する様子が体感できる。
+		</div>
+
 		<div class="callout warn">
 			<strong>一人開発の現実（モジュール化の罠回避）:</strong> 「入替可能」は<strong>モジュールAPI(インターフェース)だけ綺麗に設計</strong>し、v0で実際に作るのは<strong>組込みモジュール1個だけ</strong>に割り切る＝<strong>“modular-ready, not modular-now”</strong>。最初から複数モジュールを作ると完成しない。同様に、ルールカード②は read＋toggle/delete から始め、複雑な編集UIは後送り。
 		</div>

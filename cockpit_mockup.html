@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>設計コックピット — 画面イメージ（インタラクティブ・モックアップ）</title>
+<style>
+	:root{
+		--bg:#0c1320; --bg2:#0e1726; --panel:#141f33; --panel2:#1a2942; --panelhead:#18253c;
+		--ink:#e8edf5; --muted:#93a6c2; --dim:#6b7e9c; --line:#27395a; --line2:#33486e;
+		--accent:#f0a830; --accent2:#4fd1c5; --blue:#5b9be0; --danger:#ff6b6b; --ok:#5fd07a;
+		--warn:#f3c052; --purple:#b18cf0;
+	}
+	*{box-sizing:border-box;}
+	html,body{height:100%;}
+	body{
+		margin:0; background:var(--bg); color:var(--ink);
+		font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",system-ui,sans-serif;
+		font-size:13px; line-height:1.5; overflow:hidden;
+	}
+	.mono{font-family:"SF Mono","JetBrains Mono","Consolas",ui-monospace,monospace;}
+
+	/* ===== App shell ===== */
+	.app{display:grid; grid-template-rows:auto 1fr auto; height:100vh;}
+
+	.topbar{
+		display:flex; align-items:center; gap:14px; padding:0 14px; height:46px;
+		background:linear-gradient(180deg,#16243c,#101a2c); border-bottom:1px solid var(--line);
+	}
+	.logo{display:flex; align-items:center; gap:9px; font-weight:800; letter-spacing:.02em;}
+	.logo .dot{width:11px;height:11px;border-radius:3px;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+	.logo small{color:var(--accent2); font-weight:700; font-size:10px; letter-spacing:.18em;}
+	.crumb{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;}
+	.crumb .sep{color:var(--dim);}
+	.pill{background:var(--panel2);border:1px solid var(--line2);border-radius:7px;padding:3px 9px;color:var(--ink);font-size:11.5px;}
+	.pill.module{cursor:pointer;}
+	.pill.module:hover{border-color:var(--accent2);}
+	.spacer{flex:1;}
+	.live{display:flex;align-items:center;gap:6px;color:var(--ok);font-size:11.5px;font-weight:700;}
+	.live .blip{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(95,208,122,.6);animation:pulse 2s infinite;}
+	@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(95,208,122,.5);}70%{box-shadow:0 0 0 7px rgba(95,208,122,0);}100%{box-shadow:0 0 0 0 rgba(95,208,122,0);}}
+	.badge{display:flex;align-items:center;gap:6px;border-radius:8px;padding:4px 10px;font-size:11.5px;font-weight:700;cursor:pointer;border:1px solid transparent;}
+	.badge.drift{background:#341a20;color:#ff9aa2;border-color:#5e2a33;}
+	.badge.drift.clear{background:#15281d;color:#87e0a0;border-color:#285a3c;}
+	.badge .n{background:rgba(255,255,255,.12);border-radius:6px;padding:0 6px;}
+
+	/* ===== Body: activity bar + dashboard ===== */
+	.body{display:grid; grid-template-columns:52px 1fr; min-height:0;}
+	.activity{
+		background:#0c1424;border-right:1px solid var(--line);
+		display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:10px;
+	}
+	.act{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+		color:var(--dim);cursor:pointer;font-size:18px;position:relative;}
+	.act:hover{background:var(--panel);color:var(--ink);}
+	.act.on{color:var(--accent2);background:var(--panel2);}
+	.act.on::before{content:"";position:absolute;left:-10px;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--accent2);}
+
+	.stagewrap{min-height:0; overflow:auto; padding:12px;}
+	/* dashboard grid */
+	.dash{
+		display:grid; gap:11px; min-height:calc(100vh - 46px - 30px - 24px);
+		grid-template-columns:1.08fr 1.18fr 1fr;
+		grid-template-rows:minmax(250px,1fr) minmax(250px,1fr);
+	}
+	#p-structure{grid-column:1;grid-row:1;}
+	#p-spec{grid-column:2;grid-row:1;}
+	#p-debug{grid-column:3;grid-row:1 / span 2;}
+	#p-rules{grid-column:1;grid-row:2;}
+	#p-behavior{grid-column:2;grid-row:2;}
+
+	.panel{
+		background:linear-gradient(180deg,var(--panel),#101a2c);
+		border:1px solid var(--line); border-radius:12px; display:flex; flex-direction:column; min-height:0;
+		box-shadow:0 8px 24px rgba(0,0,0,.25);
+	}
+	.panel.flash{animation:flash 1.1s ease;}
+	@keyframes flash{0%,100%{box-shadow:0 8px 24px rgba(0,0,0,.25);}40%{box-shadow:0 0 0 2px var(--accent2),0 8px 30px rgba(79,209,197,.3);}}
+	.phead{
+		display:flex;align-items:center;gap:9px;padding:9px 12px;border-bottom:1px solid var(--line);
+		background:var(--panelhead);border-radius:12px 12px 0 0;
+	}
+	.phead .ic{width:18px;text-align:center;}
+	.phead h3{margin:0;font-size:12.5px;font-weight:700;letter-spacing:.02em;}
+	.phead .tag{margin-left:auto;font-size:10px;color:var(--dim);background:var(--panel2);border:1px solid var(--line2);border-radius:999px;padding:1px 8px;}
+	.pbody{padding:10px 12px;overflow:auto;min-height:0;flex:1;}
+
+	/* ===== Structure tree ===== */
+	.tree{font-size:12.5px;}
+	.node{padding:3px 6px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap;}
+	.node:hover{background:var(--panel2);}
+	.node.sel{background:#1d3252;box-shadow:inset 0 0 0 1px var(--line2);}
+	.node .car{width:12px;color:var(--dim);font-size:10px;transition:transform .12s;}
+	.node.open .car{transform:rotate(90deg);}
+	.node .ico{width:16px;text-align:center;}
+	.node .lbl{flex:1;overflow:hidden;text-overflow:ellipsis;}
+	.node .meta{color:var(--dim);font-size:10.5px;}
+	.node.drift{color:#ff9aa2;}
+	.node.drift .dotw{width:7px;height:7px;border-radius:50%;background:var(--danger);box-shadow:0 0 7px var(--danger);}
+	.node.fixed{color:#9be6b1;}
+	.children{margin-left:15px;border-left:1px dashed var(--line2);padding-left:4px;display:none;}
+	.children.show{display:block;}
+	.hl{outline:2px solid var(--accent2);outline-offset:1px;border-radius:6px;animation:hlp 1.2s ease;}
+	@keyframes hlp{0%{background:rgba(79,209,197,.28);}100%{background:transparent;}}
+
+	/* ===== Spec (YAML) ===== */
+	.yaml{font-size:12px;line-height:1.65;white-space:pre;}
+	.yaml .k{color:var(--accent2);} .yaml .s{color:var(--accent);} .yaml .n{color:#e6a6ff;} .yaml .c{color:var(--dim);}
+	.yaml .ln{display:block;padding:0 6px;border-radius:4px;}
+	.yaml .ln.drift{background:#2a1820;box-shadow:inset 2px 0 0 var(--danger);}
+	.yaml .ln.fixed{background:#15281d;box-shadow:inset 2px 0 0 var(--ok);}
+	.ssot-note{margin-top:8px;font-size:10.5px;color:var(--dim);border-top:1px dashed var(--line2);padding-top:7px;}
+
+	/* ===== Rule cards ===== */
+	.rules{display:flex;flex-direction:column;gap:8px;}
+	.rule{
+		background:var(--panel2);border:1px solid var(--line2);border-radius:9px;padding:8px 10px;
+		display:grid;grid-template-columns:1fr auto;gap:4px 8px;align-items:center;transition:.15s;
+	}
+	.rule.off{opacity:.42;}
+	.rule.conflict{border-color:#6e3a2a;background:#2a1d17;}
+	.rule .rt{font-size:12px;font-weight:600;grid-column:1;}
+	.rule .rmeta{grid-column:1;display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+	.src{font-size:9.5px;color:var(--blue);background:#16263f;border:1px solid var(--line2);border-radius:999px;padding:1px 7px;}
+	.flag{font-size:9.5px;border-radius:999px;padding:1px 7px;}
+	.flag.warn{color:#f3c878;background:#3a2e16;border:1px solid #5e4a22;}
+	.flag.bad{color:#ff9aa2;background:#3a1c22;border:1px solid #5e2a33;}
+	.rctl{grid-column:2;grid-row:1 / span 2;display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+	.sw{width:34px;height:18px;border-radius:999px;background:#34465f;position:relative;cursor:pointer;transition:.15s;flex:none;}
+	.sw::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#cdd8e8;transition:.15s;}
+	.sw.on{background:var(--ok);} .sw.on::after{left:18px;background:#fff;}
+	.del{color:var(--dim);cursor:pointer;font-size:14px;line-height:1;}
+	.del:hover{color:var(--danger);}
+
+	/* ===== Behavior / tests ===== */
+	.flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+	.st{background:var(--panel2);border:1px solid var(--line2);border-radius:7px;padding:4px 10px;font-size:11px;font-weight:600;}
+	.st.active{border-color:var(--accent2);color:var(--accent2);}
+	.arr{color:var(--dim);}
+	.tests{display:flex;flex-direction:column;gap:5px;}
+	.test{display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 8px;border-radius:6px;background:var(--panel2);border:1px solid var(--line2);}
+	.test .ti{width:16px;text-align:center;font-weight:800;}
+	.test.pass .ti{color:var(--ok);} .test.fail .ti{color:var(--danger);}
+	.test.fail{border-color:#5e2a33;background:#26171c;}
+	.test .tn{flex:1;} .test .tx{color:var(--dim);font-size:10.5px;}
+	.test.fixed{border-color:#285a3c;background:#15281d;}
+
+	/* ===== Debug timeline (CCAF) ===== */
+	.dbg{position:relative;padding-left:6px;}
+	.step{position:relative;padding:8px 8px 8px 26px;border-radius:8px;margin-bottom:6px;cursor:pointer;border:1px solid transparent;}
+	.step:hover{background:var(--panel2);}
+	.step::before{content:"";position:absolute;left:9px;top:14px;bottom:-12px;width:2px;background:var(--line2);}
+	.step:last-child::before{display:none;}
+	.step .knob{position:absolute;left:4px;top:10px;width:12px;height:12px;border-radius:50%;background:var(--panel2);border:2px solid var(--dim);}
+	.step.ok .knob{border-color:var(--ok);background:#16331f;}
+	.step.warnk .knob{border-color:var(--warn);background:#322914;}
+	.step.bad .knob{border-color:var(--danger);background:#321a1f;}
+	.step.cur{background:#1c2c47;border-color:var(--accent2);}
+	.step .sh{font-size:12px;font-weight:600;display:flex;gap:7px;align-items:center;}
+	.step .sd{font-size:10.5px;color:var(--muted);margin-top:2px;}
+	.step .chip{font-size:9px;border-radius:999px;padding:1px 6px;background:var(--panel);border:1px solid var(--line2);color:var(--dim);}
+
+	/* ===== Status bar ===== */
+	.status{
+		display:flex;align-items:center;gap:16px;height:30px;padding:0 14px;font-size:11px;color:var(--muted);
+		background:#0c1424;border-top:1px solid var(--line);
+	}
+	.status b{color:var(--ink);font-weight:700;}
+	.status .s-ok{color:var(--ok);} .status .s-warn{color:var(--warn);} .status .s-bad{color:var(--danger);}
+	.status .right{margin-left:auto;display:flex;gap:16px;}
+
+	/* ===== Scenario controller ===== */
+	.scenario{
+		position:fixed;left:50%;bottom:42px;transform:translateX(-50%);
+		background:rgba(16,26,44,.96);border:1px solid var(--line2);border-radius:13px;
+		padding:10px 14px;display:flex;align-items:center;gap:12px;z-index:50;
+		box-shadow:0 12px 40px rgba(0,0,0,.5);backdrop-filter:blur(6px);max-width:min(880px,92vw);
+	}
+	.scenario .play{background:var(--accent);color:#1a1205;border:none;border-radius:9px;padding:8px 14px;font-weight:800;cursor:pointer;font-size:12.5px;}
+	.scenario .play:hover{filter:brightness(1.08);}
+	.scenario .nav{background:var(--panel2);color:var(--ink);border:1px solid var(--line2);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:12px;}
+	.scenario .nav:disabled{opacity:.4;cursor:default;}
+	.scenario .cap{font-size:12px;color:var(--ink);min-width:240px;}
+	.scenario .cap b{color:var(--accent2);}
+	.scenario .stepno{font-size:10.5px;color:var(--dim);}
+	.scenario .fixbtn{background:var(--ok);color:#06210f;border:none;border-radius:8px;padding:7px 12px;font-weight:800;cursor:pointer;display:none;}
+	.scenario .fixbtn.show{display:inline-block;animation:flash2 1.4s infinite;}
+	@keyframes flash2{0%,100%{box-shadow:0 0 0 0 rgba(95,208,122,.5);}50%{box-shadow:0 0 0 6px rgba(95,208,122,0);}}
+
+	.hint{position:fixed;top:54px;right:14px;background:rgba(16,26,44,.95);border:1px solid var(--line2);border-radius:10px;padding:9px 12px;font-size:11px;color:var(--muted);max-width:230px;z-index:40;}
+	.hint b{color:var(--accent2);}
+	.hint .x{float:right;cursor:pointer;color:var(--dim);margin-left:8px;}
+
+	@media(max-width:1080px){
+		.dash{grid-template-columns:1fr;grid-template-rows:none;}
+		#p-structure,#p-spec,#p-debug,#p-rules,#p-behavior{grid-column:1;grid-row:auto;min-height:260px;}
+	}
+</style>
+</head>
+<body>
+<div class="app">
+
+	<!-- ===== Top bar ===== -->
+	<div class="topbar">
+		<div class="logo"><span class="dot"></span>設計コックピット <small>DESIGN COCKPIT</small></div>
+		<div class="crumb">
+			<span class="pill">📦 project: <b>EnergyBox</b></span>
+			<span class="sep">/</span>
+			<span class="pill module" title="成果物に合わせてモジュールを差し替え">🧩 module: 組込み(STM32/FreeRTOS) ▾</span>
+		</div>
+		<div class="spacer"></div>
+		<div class="live"><span class="blip"></span>LIVE / 単一ソース同期中</div>
+		<div class="badge drift" id="driftBadge" onclick="jumpDrift()">⚠ DRIFT <span class="n" id="driftN">1</span></div>
+	</div>
+
+	<!-- ===== Body ===== -->
+	<div class="body">
+		<div class="activity">
+			<div class="act on" title="設計コックピット">🧭</div>
+			<div class="act" title="構造">🌳</div>
+			<div class="act" title="ルール / 記憶層">🗂️</div>
+			<div class="act" title="テスト">🧪</div>
+			<div class="act" title="CCAFデバッグ">🐞</div>
+			<div class="act" title="Git">⌥</div>
+		</div>
+
+		<div class="stagewrap">
+			<div class="dash">
+
+				<!-- 構造ペイン -->
+				<div class="panel" id="p-structure">
+					<div class="phead"><span class="ic">🌳</span><h3>構造ペイン — 実装の現状（階層ドリルダウン）</h3><span class="tag">single source 由来</span></div>
+					<div class="pbody"><div class="tree" id="tree"></div></div>
+				</div>
+
+				<!-- 仕様ペイン -->
+				<div class="panel" id="p-spec">
+					<div class="phead"><span class="ic">📜</span><h3>仕様ペイン — Single Source of Truth</h3><span class="tag">spec.yaml</span></div>
+					<div class="pbody">
+						<div class="yaml mono" id="yaml"></div>
+						<div class="ssot-note">※ この1ファイルが唯一の正。構造・動作・テスト・ルールはすべてここから派生表示。<b style="color:var(--accent2)">状況把握レポート(SUMMARY.md等)を別途生成しない</b>。</div>
+					</div>
+				</div>
+
+				<!-- CCAFデバッグ -->
+				<div class="panel" id="p-debug">
+					<div class="phead"><span class="ic">🐞</span><h3>CCAF デバッグ — エージェント運用の追跡</h3><span class="tag">Claude Code</span></div>
+					<div class="pbody"><div class="dbg" id="dbg"></div></div>
+				</div>
+
+				<!-- ルールカード -->
+				<div class="panel" id="p-rules">
+					<div class="phead"><span class="ic">🗂️</span><h3>ルールカード — 記憶層インスペクタ</h3><span class="tag" id="rulesTag">— active</span></div>
+					<div class="pbody"><div class="rules" id="rules"></div></div>
+				</div>
+
+				<!-- 動作・テスト -->
+				<div class="panel" id="p-behavior">
+					<div class="phead"><span class="ic">🧪</span><h3>動作・テストペイン</h3><span class="tag" id="testTag">—</span></div>
+					<div class="pbody">
+						<div class="flow" id="flow"></div>
+						<div class="tests" id="tests"></div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- ===== Status bar ===== -->
+	<div class="status">
+		<span>🧠 agent: <b>Claude Code</b></span>
+		<span>🗂️ rules: <b id="st-rules">12</b> active <span class="s-warn" id="st-stale">(2 stale)</span></span>
+		<span>🧪 tests: <b id="st-tests">8/9</b></span>
+		<span id="st-drift" class="s-bad">⚠ drift: 1</span>
+		<div class="right"><span>module: 組込み</span><span>branch: <b>claude/epic-newton</b></span></div>
+	</div>
+</div>
+
+<!-- ===== onboarding hint ===== -->
+<div class="hint" id="hint">
+	<span class="x" onclick="document.getElementById('hint').remove()">✕</span>
+	<b>これは“動く画面イメージ”です。</b><br>
+	ノードを開く・スイッチを切る・ステップを押すと反応します。下の<b>▶ シナリオ実演</b>で「CCAFがドリフト→検出→修正」を再生できます。
+</div>
+
+<!-- ===== Scenario controller ===== -->
+<div class="scenario">
+	<button class="play" id="playBtn" onclick="playScenario()">▶ シナリオ実演</button>
+	<button class="nav" id="prevBtn" onclick="stepNav(-1)" disabled>‹</button>
+	<span class="stepno" id="stepno">0 / 6</span>
+	<button class="nav" id="nextBtn" onclick="stepNav(1)">›</button>
+	<span class="cap" id="cap">「CCAFがドリフトを起こす → 検出 → 仕様に合わせて自動修正」を再生</span>
+	<button class="fixbtn" id="fixBtn" onclick="applyFix()">✓ 仕様に合わせて修正</button>
+</div>
+
+<script>
+/* ============ data model (EnergyBox firmware) ============ */
+const tree = [
+	{id:'sys', ic:'🔧', lbl:'EnergyBox System', meta:'firmware', open:true, children:[
+		{id:'modbus', ic:'🔌', lbl:'Modbus Master (RTU)', meta:'holding 0x00–0x0F', open:true, children:[
+			{id:'reg', ic:'▦', lbl:'reg: grid_voltage 0x0000', meta:'uint16 ×0.1'},
+			{id:'modbus_task', ic:'⚙', lbl:'modbus_task', meta:'prio 3 / 100ms'},
+		]},
+		{id:'rtos', ic:'🧵', lbl:'FreeRTOS Tasks', meta:'3 tasks', open:true, children:[
+			{id:'lwip_task', ic:'⚙', lbl:'lwip_task', meta:'prio 2'},
+			{id:'telemetry', ic:'⚙', lbl:'telemetry_task', meta:'prio 1 / 30s', drift:true},
+		]},
+		{id:'lwip', ic:'🌐', lbl:'LwIP / TCP', meta:''},
+		{id:'azure', ic:'☁', lbl:'Azure IoT (MQTT)', meta:''},
+		{id:'sm', ic:'🔁', lbl:'State Machine', meta:'INIT→CONNECT→RUN→FAULT'},
+	]}
+];
+
+let rules = [
+	{id:'r1', t:'Modbusレジスタはビッグエンディアン', src:'CLAUDE.md', on:true},
+	{id:'r2', t:'FreeRTOSタスク優先度は最大5', src:'rules/rtos.md', on:true},
+	{id:'r3', t:'全関数にDoxygenコメント必須', src:'CLAUDE.md', on:false, flag:'warn', flagt:'未適用(陳腐化)'},
+	{id:'r4', t:'telemetryは30秒周期で送信', src:'CLAUDE.md(古い)', on:true, flag:'bad', flagt:'⚠ 仕様(60s)と矛盾', conflict:true},
+	{id:'r5', t:'再接続は指数バックオフ', src:'rules/net.md', on:true},
+	{id:'r6', t:'未使用ヘッダをinclude禁止', src:'rules/style.md', on:false, flag:'warn', flagt:'陳腐化'},
+];
+
+let tests = [
+	{id:'t1', name:'modbus_crc_test', pass:true, x:'CRC16 一致'},
+	{id:'t2', name:'reg_scale_test', pass:true, x:'×0.1 スケール'},
+	{id:'telemetry', name:'telemetry_period_test', pass:false, x:'expected 60s, got 30s'},
+	{id:'t4', name:'reconnect_backoff_test', pass:true, x:''},
+	{id:'t5', name:'state_fault_test', pass:true, x:''},
+];
+
+const flow = ['INIT','CONNECT','RUN','FAULT'];
+
+const dbg = [
+	{id:'d1', cls:'ok', h:'spec.yaml を読込', d:'modbus_master / telemetry_task の仕様を取得', chip:'read'},
+	{id:'d2', cls:'warnk', h:'記憶層ルールを12件ロード', d:'うち2件が陳腐化(stale)。古いルール r4 を含む', chip:'memory'},
+	{id:'d3', cls:'bad', h:'telemetry_task を生成', d:'ルール#4「30秒」を適用 → 仕様(60秒)に反してコード化', chip:'generate', drift:true},
+	{id:'d4', cls:'bad', h:'ドリフト検出', d:'実装(30s) ≠ 仕様(60s)。構造ノード/テストに波及', chip:'drift'},
+	{id:'d5', cls:'warnk', h:'ユーザー判断待ち', d:'「仕様に合わせ修正」か「仕様を30sに更新」か', chip:'await'},
+];
+
+/* ============ render ============ */
+function renderTree(){
+	const root=document.getElementById('tree'); root.innerHTML='';
+	const walk=(nodes,parent)=>{
+		nodes.forEach(n=>{
+			const el=document.createElement('div');
+			el.className='node'+(n.open?' open':'')+(n.drift?' drift':'')+(n.fixed?' fixed':'');
+			el.id='node-'+n.id;
+			const hasCh=n.children&&n.children.length;
+			el.innerHTML=`<span class="car">${hasCh?'▶':''}</span><span class="ico">${n.ic}</span>`+
+				`<span class="lbl">${n.lbl}</span>`+
+				(n.drift?'<span class="dotw"></span>':'')+
+				`<span class="meta">${n.meta||''}</span>`;
+			parent.appendChild(el);
+			let ch=null;
+			if(hasCh){
+				ch=document.createElement('div'); ch.className='children'+(n.open?' show':'');
+				parent.appendChild(ch); walk(n.children,ch);
+			}
+			el.onclick=(e)=>{e.stopPropagation(); selectNode(el);
+				if(hasCh){n.open=!n.open; el.classList.toggle('open'); ch.classList.toggle('show');}};
+		});
+	};
+	walk(tree,root);
+}
+function selectNode(el){document.querySelectorAll('.node').forEach(n=>n.classList.remove('sel')); el.classList.add('sel');}
+
+function renderYaml(){
+	const tele = state.fixed?'60':'30';
+	const cls = state.fixed?'fixed':(state.drift?'drift':'');
+	document.getElementById('yaml').innerHTML =
+`<span class="ln"><span class="k">module</span>: modbus_master</span>`+
+`<span class="ln"><span class="k">registers</span>:</span>`+
+`<span class="ln">  - <span class="k">name</span>: grid_voltage</span>`+
+`<span class="ln">    <span class="k">addr</span>: <span class="n">0x0000</span>  <span class="k">scale</span>: <span class="n">0.1</span></span>`+
+`<span class="ln"><span class="k">tasks</span>:</span>`+
+`<span class="ln">  <span class="k">modbus_task</span>: { <span class="k">prio</span>: <span class="n">3</span>, <span class="k">period_ms</span>: <span class="n">100</span> }</span>`+
+`<span class="ln ${cls}" id="spec-telemetry">  <span class="k">telemetry_task</span>: { <span class="k">prio</span>: <span class="n">1</span>, <span class="k">period_s</span>: <span class="n">${tele}</span> } <span class="c"># 仕様=60s</span></span>`+
+`<span class="ln"><span class="k">state_machine</span>:</span>`+
+`<span class="ln">  <span class="k">states</span>: [INIT, CONNECT, RUN, FAULT]</span>`;
+}
+
+function renderRules(){
+	const box=document.getElementById('rules'); box.innerHTML='';
+	rules.forEach(r=>{
+		const el=document.createElement('div');
+		el.className='rule'+(r.on?'':' off')+(r.conflict&&r.on?' conflict':'');
+		el.id='rule-'+r.id;
+		el.innerHTML=`<div class="rt">${r.t}</div>`+
+			`<div class="rmeta"><span class="src">${r.src}</span>`+
+			(r.flag?`<span class="flag ${r.flag}">${r.flagt}</span>`:'')+`</div>`+
+			`<div class="rctl"><div class="sw ${r.on?'on':''}"></div><span class="del" title="削除">🗑</span></div>`;
+		el.querySelector('.sw').onclick=()=>{r.on=!r.on; if(r.id==='r4'&&!r.on)r.conflict=false; renderRules(); updateStatus();};
+		el.querySelector('.del').onclick=()=>{rules=rules.filter(x=>x.id!==r.id); renderRules(); updateStatus();};
+		box.appendChild(el);
+	});
+	const active=rules.filter(r=>r.on).length;
+	document.getElementById('rulesTag').textContent=active+' active';
+}
+
+function renderTests(){
+	const box=document.getElementById('tests'); box.innerHTML='';
+	tests.forEach(t=>{
+		const el=document.createElement('div');
+		el.className='test '+(t.pass?'pass':'fail')+(t.fixed?' fixed':'');
+		el.id='test-'+t.id;
+		el.innerHTML=`<span class="ti">${t.pass?'✓':'✗'}</span><span class="tn">${t.name}</span><span class="tx">${t.x}</span>`;
+		box.appendChild(el);
+	});
+	const pass=tests.filter(t=>t.pass).length;
+	document.getElementById('testTag').textContent=pass+'/'+tests.length+' passing';
+}
+
+function renderFlow(){
+	const box=document.getElementById('flow'); box.innerHTML='';
+	flow.forEach((s,i)=>{
+		const el=document.createElement('span'); el.className='st'+(s==='RUN'?' active':''); el.textContent=s;
+		box.appendChild(el);
+		if(i<flow.length-1){const a=document.createElement('span');a.className='arr';a.textContent='→';box.appendChild(a);}
+	});
+}
+
+function renderDbg(){
+	const box=document.getElementById('dbg'); box.innerHTML='';
+	dbg.forEach((d,i)=>{
+		const el=document.createElement('div'); el.className='step '+d.cls; el.id='dbg-'+d.id;
+		el.innerHTML=`<span class="knob"></span><div class="sh">${d.h} <span class="chip">${d.chip}</span></div><div class="sd">${d.d}</div>`;
+		el.onclick=()=>focusStep(i);
+		box.appendChild(el);
+	});
+}
+
+function updateStatus(){
+	const active=rules.filter(r=>r.on).length;
+	const stale=rules.filter(r=>r.on&&(r.flag==='warn'||r.flag==='bad')).length;
+	const pass=tests.filter(t=>t.pass).length;
+	document.getElementById('st-rules').textContent=active;
+	document.getElementById('st-stale').textContent= stale?`(${stale} stale)`:'(clean)';
+	document.getElementById('st-stale').className= stale?'s-warn':'s-ok';
+	document.getElementById('st-tests').textContent=pass+'/'+tests.length;
+	const drift = state.fixed?0:1;
+	document.getElementById('st-drift').textContent= drift?'⚠ drift: 1':'✓ no drift';
+	document.getElementById('st-drift').className= drift?'s-bad':'s-ok';
+	document.getElementById('driftN').textContent=drift;
+	const b=document.getElementById('driftBadge');
+	if(drift){b.classList.remove('clear'); b.innerHTML='⚠ DRIFT <span class="n" id="driftN">'+drift+'</span>';}
+	else{b.classList.add('clear'); b.innerHTML='✓ NO DRIFT';}
+}
+
+/* ============ interactions ============ */
+const state={drift:true, fixed:false};
+
+function flash(id){const e=document.getElementById(id); if(!e)return; e.classList.add('hl'); setTimeout(()=>e.classList.remove('hl'),1200);}
+function flashPanel(id){const e=document.getElementById(id); e.classList.add('flash'); setTimeout(()=>e.classList.remove('flash'),1100);}
+
+function jumpDrift(){
+	if(state.fixed){return;}
+	flash('node-telemetry'); flash('spec-telemetry'); flash('rule-r4'); flash('test-telemetry');
+	flashPanel('p-debug');
+}
+
+function focusStep(i){
+	document.querySelectorAll('.step').forEach(s=>s.classList.remove('cur'));
+	const d=dbg[i]; const el=document.getElementById('dbg-'+d.id); el.classList.add('cur');
+	if(d.drift){flash('rule-r4'); flash('spec-telemetry'); flash('node-telemetry');}
+	if(d.id==='d4'){flash('node-telemetry'); flash('test-telemetry');}
+	if(d.id==='d1'){flash('spec-telemetry');}
+	if(d.id==='d2'){flash('rule-r4'); flashPanel('p-rules');}
+}
+
+/* ============ scenario ============ */
+const scenes=[
+	{cap:'初期状態。<b>telemetry</b> が実装30s / 仕様60s でドリフトしています。', fix:false, act:()=>{}},
+	{cap:'<b>CCAF</b>が <b>spec.yaml</b> を読込 → 仕様を取得', fix:false, act:()=>{focusStep(0);}},
+	{cap:'記憶層から<b>ルール12件</b>ロード。古い<b>ルール#4(30s)</b>が紛れ込む', fix:false, act:()=>{focusStep(1); flash('rule-r4');}},
+	{cap:'ルール#4を適用し <b>telemetry_task</b> を30sで生成 → <b>仕様と矛盾＝ドリフト発生</b>', fix:false, act:()=>{focusStep(2); flash('node-telemetry'); flash('spec-telemetry');}},
+	{cap:'<b>ドリフト検出</b>：テスト <b>telemetry_period_test</b> が失敗（60s期待/30s）', fix:false, act:()=>{focusStep(3); flash('test-telemetry'); flashPanel('p-behavior');}},
+	{cap:'判断待ち。下の<b>✓ 仕様に合わせて修正</b>を押してください', fix:true, act:()=>{focusStep(4);}},
+	{cap:'✅ <b>修正完了</b>：実装60sに更新／古いルール#4を無効化／テスト緑／<b>ドリフト解消</b>。レポートは作らず画面が常に正。', fix:false, act:()=>{}},
+];
+let sc=0;
+function showScene(){
+	const s=scenes[sc];
+	document.getElementById('cap').innerHTML=s.cap;
+	document.getElementById('stepno').textContent=sc+' / 6';
+	document.getElementById('prevBtn').disabled=(sc===0);
+	document.getElementById('nextBtn').disabled=(sc===scenes.length-1);
+	document.getElementById('fixBtn').classList.toggle('show', s.fix && !state.fixed);
+	s.act();
+}
+function stepNav(d){sc=Math.max(0,Math.min(scenes.length-1,sc+d)); showScene();}
+let playTimer=null;
+function playScenario(){
+	resetScenario(); sc=0; showScene();
+	let i=0;
+	clearInterval(playTimer);
+	playTimer=setInterval(()=>{
+		i++;
+		if(i>=5){clearInterval(playTimer); return;} // stop at fix step, wait for user
+		sc=i; showScene();
+	},1500);
+}
+function applyFix(){
+	state.fixed=true; state.drift=false;
+	// fix data
+	const tele=tree[0].children[1].children[1]; tele.drift=false; tele.fixed=true; tele.meta='prio 1 / 60s';
+	const r4=rules.find(r=>r.id==='r4'); if(r4){r4.on=false; r4.conflict=false; r4.flag='warn'; r4.flagt='無効化(古い)';}
+	const tt=tests.find(t=>t.id==='telemetry'); tt.pass=true; tt.fixed=true; tt.x='60s 一致';
+	renderTree(); renderYaml(); renderRules(); renderTests(); updateStatus();
+	flashPanel('p-structure'); flashPanel('p-spec'); flashPanel('p-behavior');
+	sc=6; showScene();
+}
+function resetScenario(){
+	state.fixed=false; state.drift=true;
+	rules=[
+		{id:'r1', t:'Modbusレジスタはビッグエンディアン', src:'CLAUDE.md', on:true},
+		{id:'r2', t:'FreeRTOSタスク優先度は最大5', src:'rules/rtos.md', on:true},
+		{id:'r3', t:'全関数にDoxygenコメント必須', src:'CLAUDE.md', on:false, flag:'warn', flagt:'未適用(陳腐化)'},
+		{id:'r4', t:'telemetryは30秒周期で送信', src:'CLAUDE.md(古い)', on:true, flag:'bad', flagt:'⚠ 仕様(60s)と矛盾', conflict:true},
+		{id:'r5', t:'再接続は指数バックオフ', src:'rules/net.md', on:true},
+		{id:'r6', t:'未使用ヘッダをinclude禁止', src:'rules/style.md', on:false, flag:'warn', flagt:'陳腐化'},
+	];
+	tests=[
+		{id:'t1', name:'modbus_crc_test', pass:true, x:'CRC16 一致'},
+		{id:'t2', name:'reg_scale_test', pass:true, x:'×0.1 スケール'},
+		{id:'telemetry', name:'telemetry_period_test', pass:false, x:'expected 60s, got 30s'},
+		{id:'t4', name:'reconnect_backoff_test', pass:true, x:''},
+		{id:'t5', name:'state_fault_test', pass:true, x:''},
+	];
+	const tele=tree[0].children[1].children[1]; tele.drift=true; tele.fixed=false; tele.meta='prio 1 / 30s';
+	renderTree(); renderYaml(); renderRules(); renderTests(); updateStatus();
+}
+
+/* ============ init ============ */
+renderTree(); renderYaml(); renderRules(); renderTests(); renderFlow(); renderDbg(); updateStatus(); showScene();
+</script>
+</body>
+</html>
