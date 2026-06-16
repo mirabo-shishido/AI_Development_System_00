@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>設計コックピット — データフロー・メイン画面（モックアップ）</title>
+<title>設計コックピット — データフロー（機能フロー / グリッド配置）</title>
 <style>
 	:root{
-		--bg:#0c1320; --panel:#141f33; --panel2:#1a2942; --panelhead:#18253c;
-		--ink:#e8edf5; --muted:#93a6c2; --dim:#6b7e9c; --line:#27395a; --line2:#33486e;
-		--accent:#f0a830; --accent2:#4fd1c5; --blue:#5b9be0; --danger:#ff6b6b; --ok:#5fd07a;
-		--warn:#f3c052; --purple:#b18cf0; --task:#5b9be0; --queue:#f0a830; --var:#b18cf0; --ext:#5fd07a;
+		--bg:#0c1320;--panel:#141f33;--panel2:#1a2942;--panelhead:#18253c;
+		--ink:#e8edf5;--muted:#93a6c2;--dim:#6b7e9c;--line:#27395a;--line2:#33486e;
+		--accent:#f0a830;--accent2:#4fd1c5;--blue:#5b9be0;--danger:#ff6b6b;--ok:#5fd07a;--warn:#f3c052;
+		--task:#5b9be0;--queue:#f0a830;--var:#b18cf0;--ext:#5fd07a;--dev:#e8836b;
 	}
 	*{box-sizing:border-box;}
 	html,body{height:100%;}
@@ -17,10 +17,7 @@
 		font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",system-ui,sans-serif;}
 	.mono{font-family:"SF Mono","JetBrains Mono","Consolas",ui-monospace,monospace;}
 	.app{display:grid;grid-template-rows:auto 1fr auto;height:100vh;}
-
-	/* top bar */
-	.topbar{display:flex;align-items:center;gap:14px;padding:0 14px;height:46px;
-		background:linear-gradient(180deg,#16243c,#101a2c);border-bottom:1px solid var(--line);}
+	.topbar{display:flex;align-items:center;gap:14px;padding:0 14px;height:46px;background:linear-gradient(180deg,#16243c,#101a2c);border-bottom:1px solid var(--line);}
 	.logo{display:flex;align-items:center;gap:9px;font-weight:800;}
 	.logo .dot{width:11px;height:11px;border-radius:3px;background:var(--accent);box-shadow:0 0 10px var(--accent);}
 	.logo small{color:var(--accent2);font-weight:700;font-size:10px;letter-spacing:.18em;}
@@ -30,94 +27,94 @@
 	.live .blip{width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 2s infinite;}
 	@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(95,208,122,.5);}70%{box-shadow:0 0 0 7px rgba(95,208,122,0);}100%{box-shadow:0 0 0 0 rgba(95,208,122,0);}}
 
-	/* body grid: activity | sidebar | center(canvas+dock) | detail */
-	.body{display:grid;grid-template-columns:50px 196px 1fr 312px;min-height:0;}
-	.activity{background:#0c1424;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:10px;}
-	.act{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--dim);cursor:pointer;font-size:17px;position:relative;}
-	.act:hover{background:var(--panel);color:var(--ink);}
-	.act.on{color:var(--accent2);background:var(--panel2);}
-	.act.on::before{content:"";position:absolute;left:-9px;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--accent2);}
+	.body{display:grid;grid-template-columns:248px 1fr 312px;min-height:0;}
 
-	/* sidebar (component selection) */
-	.sidebar{background:#0e1828;border-right:1px solid var(--line);overflow:auto;padding:8px 0;}
-	.sb-h{font-size:10px;letter-spacing:.14em;color:var(--dim);font-weight:700;padding:10px 12px 4px;}
-	.sb-item{display:flex;align-items:center;gap:8px;padding:6px 12px;cursor:pointer;font-size:12px;border-left:3px solid transparent;}
-	.sb-item:hover{background:var(--panel);}
-	.sb-item.sel{background:#1c2c47;border-left-color:var(--accent2);}
-	.sb-item .sw{width:9px;height:9px;border-radius:3px;flex:none;}
-	.sb-item .m{margin-left:auto;color:var(--dim);font-size:10px;}
-	.k-task{background:var(--task);} .k-queue{background:var(--queue);} .k-var{background:var(--var);} .k-ext{background:var(--ext);}
+	/* ===== sidebar: feature flows ===== */
+	.sidebar{background:#0e1828;border-right:1px solid var(--line);overflow:auto;}
+	.sb-h{font-size:10px;letter-spacing:.13em;color:var(--dim);font-weight:700;padding:11px 12px 5px;}
+	.sb-all{margin:4px 10px;padding:6px 10px;border-radius:8px;font-size:11.5px;color:var(--muted);cursor:pointer;border:1px solid var(--line2);text-align:center;}
+	.sb-all:hover{color:var(--ink);} .sb-all.on{background:var(--panel2);color:var(--ink);}
+	.feat{margin:6px 8px;border:1px solid var(--line2);border-radius:11px;overflow:hidden;background:var(--panel);transition:.15s;}
+	.feat.on{border-color:var(--accent2);box-shadow:0 0 0 1px rgba(79,209,197,.35);}
+	.feat .fh{display:flex;align-items:center;gap:8px;padding:9px 11px;cursor:pointer;}
+	.feat .fh .fi{width:20px;text-align:center;font-size:15px;}
+	.feat .fh .fn{font-weight:700;font-size:12.5px;}
+	.feat .fh .fp{margin-left:auto;font-size:9.5px;color:#0c1320;background:var(--accent2);border-radius:999px;padding:1px 7px;font-weight:800;}
+	.feat .fh .fp.warn{background:var(--warn);}
+	.feat .fbody{display:none;padding:0 11px 10px;border-top:1px dashed var(--line2);}
+	.feat.on .fbody{display:block;}
+	.feat .desc{font-size:11px;color:var(--muted);margin:8px 0 9px;}
+	.feat .tt{font-size:9.5px;letter-spacing:.08em;color:var(--dim);font-weight:700;margin-bottom:4px;}
+	.tline{display:flex;align-items:center;gap:7px;font-size:11px;padding:2px 0;}
+	.tline .ti{font-weight:800;width:13px;} .tline.pass .ti{color:var(--ok);} .tline.fail .ti{color:var(--danger);}
+	.tline .tx{margin-left:auto;color:var(--dim);font-size:10px;}
+	.feat .tsum{font-size:10px;margin-top:6px;color:var(--muted);}
+	.feat .tsum b.ok{color:var(--ok);} .feat .tsum b.bad{color:var(--danger);}
 
-	/* center stack */
-	.center{display:flex;flex-direction:column;min-width:0;background:radial-gradient(900px 500px at 40% 0%,#101d33,#0c1320);}
-	.canvas-head{display:flex;align-items:center;gap:10px;padding:7px 12px;border-bottom:1px solid var(--line);background:#101a2c;}
+	/* ===== center: canvas + dock ===== */
+	.center{display:flex;flex-direction:column;min-width:0;}
+	.canvas-head{display:flex;align-items:center;gap:10px;padding:6px 12px;border-bottom:1px solid var(--line);background:#101a2c;}
 	.canvas-head h3{margin:0;font-size:12.5px;}
-	.canvas-head .legend{margin-left:auto;display:flex;gap:12px;font-size:10.5px;color:var(--muted);}
-	.lg{display:flex;align-items:center;gap:5px;}
-	.lg .b{width:10px;height:10px;border-radius:3px;}
-	.canvas-wrap{flex:1;overflow:auto;position:relative;}
-	.canvas{position:relative;width:1240px;height:400px;margin:0 auto;}
+	.canvas-head .now{font-size:11px;color:var(--accent2);font-weight:700;}
+	.canvas-head .btn{font-size:11px;color:var(--muted);background:var(--panel2);border:1px solid var(--line2);border-radius:7px;padding:4px 9px;cursor:pointer;}
+	.canvas-head .btn:hover{color:var(--ink);border-color:var(--accent2);}
+	.canvas-head .legend{margin-left:auto;display:flex;gap:11px;font-size:10px;color:var(--muted);}
+	.lg{display:flex;align-items:center;gap:5px;} .lg .b{width:10px;height:10px;border-radius:3px;}
+	.canvas-wrap{flex:1;overflow:auto;position:relative;background:#0b1220;}
+	.canvas{position:relative;width:1360px;height:470px;
+		background-image:linear-gradient(rgba(127,168,212,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(127,168,212,.05) 1px,transparent 1px);
+		background-size:20px 20px;}
 	svg.edges{position:absolute;left:0;top:0;pointer-events:none;z-index:1;}
-	.elabel{position:absolute;z-index:2;font-size:9.5px;color:var(--muted);background:rgba(12,19,32,.85);border:1px solid var(--line2);border-radius:5px;padding:0 5px;transform:translate(-50%,-50%);pointer-events:none;white-space:nowrap;}
+	.elabel{position:absolute;z-index:2;font-size:9px;color:var(--muted);background:rgba(11,18,32,.9);border:1px solid var(--line2);border-radius:5px;padding:0 5px;transform:translate(-50%,-50%);pointer-events:none;white-space:nowrap;}
+	.elabel .per{color:var(--accent2);}
 
-	/* nodes */
-	.node{position:absolute;z-index:3;border-radius:10px;cursor:pointer;background:linear-gradient(180deg,var(--panel),#101a2c);
-		border:1px solid var(--line2);box-shadow:0 6px 16px rgba(0,0,0,.3);transition:box-shadow .15s,transform .12s;}
-	.node:hover{transform:translateY(-1px);}
+	.node{position:absolute;z-index:3;border-radius:10px;cursor:grab;background:linear-gradient(180deg,var(--panel),#101a2c);
+		border:1px solid var(--line2);box-shadow:0 6px 16px rgba(0,0,0,.3);transition:opacity .15s,box-shadow .15s;}
+	.node:active{cursor:grabbing;}
 	.node.sel{box-shadow:0 0 0 2px var(--accent2),0 8px 22px rgba(79,209,197,.25);}
+	.node.dim{opacity:.24;filter:saturate(.4);}
 	.node .nh{display:flex;align-items:center;gap:7px;padding:7px 10px;}
 	.node .nh .ic{width:16px;text-align:center;}
 	.node .nh .nm{font-weight:700;font-size:12px;}
 	.node .nh .ki{margin-left:auto;font-size:9px;color:#0c1320;border-radius:999px;padding:1px 7px;font-weight:800;}
-	.node .nsub{padding:0 10px 7px;font-size:10.5px;color:var(--muted);}
-	.node.task{border-top:3px solid var(--task);}
-	.node.queue{border-top:3px solid var(--queue);}
-	.node.var{border-top:3px solid var(--var);}
-	.node.ext{border-top:3px solid var(--ext);border-style:dashed;}
-	.ki.task{background:var(--task);} .ki.queue{background:var(--queue);} .ki.var{background:var(--var);} .ki.ext{background:var(--ext);}
+	.node .nsub{padding:0 10px 7px;font-size:10px;color:var(--muted);}
+	.node .per{display:inline-block;font-size:9px;color:var(--accent2);border:1px solid #2c5550;background:#10302c;border-radius:999px;padding:0 6px;margin-left:5px;}
+	.node.task{border-top:3px solid var(--task);} .node.queue{border-top:3px solid var(--queue);}
+	.node.var{border-top:3px solid var(--var);} .node.ext{border-top:3px solid var(--ext);border-style:dashed;}
+	.node.dev{border-top:3px solid var(--dev);}
+	.ki.task{background:var(--task);} .ki.queue{background:var(--queue);} .ki.var{background:var(--var);} .ki.ext{background:var(--ext);} .ki.dev{background:var(--dev);}
 	.node.drift{border-color:#6e3a2a;}
-	.node.drift .nh::after{content:"⚠";color:var(--danger);}
-	/* struct members (expand/collapse) */
-	.members{display:none;border-top:1px dashed var(--line2);padding:6px 10px;font-size:10.5px;}
+	.members{display:none;border-top:1px dashed var(--line2);padding:6px 10px;font-size:10px;}
 	.members.show{display:block;}
 	.members .mrow{display:flex;gap:8px;padding:2px 0;}
 	.members .mn{color:var(--accent2);} .members .mt{color:var(--dim);margin-left:auto;}
-	.node .caret{font-size:9px;color:var(--dim);}
+	.caret{font-size:9px;color:var(--dim);margin-left:4px;}
 
-	/* bottom dock */
-	.dock{height:182px;border-top:1px solid var(--line);background:#0e1828;display:flex;flex-direction:column;}
+	.dock{height:158px;border-top:1px solid var(--line);background:#0e1828;display:flex;flex-direction:column;}
 	.tabs{display:flex;gap:2px;padding:6px 8px 0;}
 	.tab{padding:6px 12px;font-size:11.5px;color:var(--muted);cursor:pointer;border-radius:8px 8px 0 0;border:1px solid transparent;border-bottom:none;}
-	.tab:hover{color:var(--ink);}
-	.tab.on{background:var(--panel);color:var(--ink);border-color:var(--line);}
+	.tab:hover{color:var(--ink);} .tab.on{background:var(--panel);color:var(--ink);border-color:var(--line);}
 	.tab .cnt{color:var(--dim);font-size:10px;margin-left:4px;}
 	.dock-body{flex:1;overflow:auto;background:var(--panel);border-top:1px solid var(--line);padding:8px 12px;}
-
-	table.lst{width:100%;border-collapse:collapse;font-size:11.5px;}
-	table.lst th,table.lst td{border-bottom:1px solid var(--line);padding:5px 8px;text-align:left;}
-	table.lst th{color:var(--accent2);font-weight:700;font-size:10px;letter-spacing:.05em;}
-	table.lst tr{cursor:pointer;} table.lst tbody tr:hover{background:var(--panel2);}
+	table.lst{width:100%;border-collapse:collapse;font-size:11px;}
+	table.lst th,table.lst td{border-bottom:1px solid var(--line);padding:4px 8px;text-align:left;}
+	table.lst th{color:var(--accent2);font-weight:700;font-size:10px;}
+	table.lst tbody tr{cursor:pointer;} table.lst tbody tr:hover{background:var(--panel2);}
 	.swatch{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;}
 	.chip{display:inline-block;font-size:9.5px;border-radius:999px;padding:1px 7px;border:1px solid var(--line2);color:var(--muted);margin:1px 2px;}
 	.chip.r{color:#9be6b1;border-color:#285a3c;} .chip.w{color:#f3c878;border-color:#5e4a22;}
-
-	/* rules compact */
+	.flag.bad{font-size:9.5px;color:#ff9aa2;background:#3a1c22;border:1px solid #5e2a33;border-radius:999px;padding:1px 6px;}
 	.rrow{display:flex;align-items:center;gap:8px;padding:5px 6px;border-bottom:1px solid var(--line);font-size:11.5px;}
 	.rrow.off{opacity:.45;}
 	.sw2{width:30px;height:16px;border-radius:999px;background:#34465f;position:relative;cursor:pointer;flex:none;}
 	.sw2::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#cdd8e8;transition:.15s;}
 	.sw2.on{background:var(--ok);} .sw2.on::after{left:16px;}
 	.src{font-size:9.5px;color:var(--blue);background:#16263f;border:1px solid var(--line2);border-radius:999px;padding:1px 6px;}
-	.flag.bad{font-size:9.5px;color:#ff9aa2;background:#3a1c22;border:1px solid #5e2a33;border-radius:999px;padding:1px 6px;}
-	.test{display:flex;align-items:center;gap:8px;font-size:11.5px;padding:4px 6px;}
-	.test .ti{font-weight:800;} .test.pass .ti{color:var(--ok);} .test.fail .ti{color:var(--danger);}
-	.test .tx{color:var(--dim);margin-left:auto;font-size:10px;}
 	.step{font-size:11px;padding:4px 6px 4px 16px;position:relative;}
 	.step::before{content:"";position:absolute;left:5px;top:9px;width:7px;height:7px;border-radius:50%;background:var(--dim);}
 	.step.bad::before{background:var(--danger);} .step.ok::before{background:var(--ok);} .step.warn::before{background:var(--warn);}
 	.step b{font-weight:700;} .step .d{color:var(--muted);font-size:10px;}
 
-	/* detail panel */
 	.detail{background:#0e1828;border-left:1px solid var(--line);overflow:auto;display:flex;flex-direction:column;}
 	.dh{padding:11px 13px;border-bottom:1px solid var(--line);background:var(--panelhead);}
 	.dh .dt{font-weight:800;font-size:14px;display:flex;align-items:center;gap:8px;}
@@ -127,129 +124,143 @@
 	.proc{font-size:11.5px;line-height:1.7;}
 	.proc .ln{display:flex;gap:8px;padding:2px 0;}
 	.proc .no{color:var(--dim);width:16px;text-align:right;flex:none;}
-	.proc .cd{color:var(--ink);}
 	.proc .cd .fn{color:var(--accent2);} .proc .cd .cm{color:var(--dim);}
 	.proc .ln.drift{background:#2a1820;border-radius:5px;box-shadow:inset 2px 0 0 var(--danger);}
 	.kv{display:flex;justify-content:space-between;font-size:11.5px;padding:2px 0;}
-	.kv .vk{color:var(--muted);} .kv .vv{font-weight:600;}
+	.kv .vk{color:var(--muted);}
 	.memlist .mrow{display:flex;gap:8px;font-size:11.5px;padding:3px 0;border-bottom:1px dashed var(--line);}
 	.memlist .mn{color:var(--accent2);} .memlist .mt{color:var(--dim);margin-left:auto;}
 	.prompt{margin-top:auto;padding:11px 13px;border-top:1px solid var(--line);background:#0c1424;}
-	.prompt .pl{font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:.06em;}
+	.prompt .pl{font-size:10px;color:var(--dim);margin-bottom:6px;}
 	.prompt .row{display:flex;gap:7px;}
 	.prompt input{flex:1;background:var(--panel2);border:1px solid var(--line2);border-radius:8px;color:var(--ink);padding:7px 9px;font-size:11.5px;}
 	.prompt input:focus{outline:none;border-color:var(--accent2);}
 	.prompt button{background:var(--accent);color:#1a1205;border:none;border-radius:8px;padding:0 12px;font-weight:800;cursor:pointer;}
-	.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:rgba(16,26,44,.97);border:1px solid var(--line2);border-radius:10px;padding:9px 16px;font-size:12px;z-index:80;display:none;box-shadow:0 12px 40px rgba(0,0,0,.5);}
-	.toast.show{display:block;animation:rise .3s ease;}
-	@keyframes rise{from{opacity:0;transform:transl(-50%,8px);}}
-
-	.status{display:flex;align-items:center;gap:16px;height:28px;padding:0 14px;font-size:11px;color:var(--muted);background:#0c1424;border-top:1px solid var(--line);}
+	.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(16,26,44,.97);border:1px solid var(--line2);border-radius:10px;padding:9px 16px;font-size:12px;z-index:80;display:none;box-shadow:0 12px 40px rgba(0,0,0,.5);}
+	.toast.show{display:block;}
+	.status{display:flex;align-items:center;gap:15px;height:28px;padding:0 14px;font-size:11px;color:var(--muted);background:#0c1424;border-top:1px solid var(--line);}
 	.status b{color:var(--ink);} .s-bad{color:var(--danger);} .s-warn{color:var(--warn);}
 </style>
 </head>
 <body>
 <div class="app">
 	<div class="topbar">
-		<div class="logo"><span class="dot"></span>設計コックピット <small>DATAFLOW VIEW</small></div>
-		<span class="pill">📦 EnergyBox</span>
-		<span class="pill">🧩 組込み(STM32/FreeRTOS)</span>
+		<div class="logo"><span class="dot"></span>設計コックピット <small>FEATURE DATAFLOW</small></div>
+		<span class="pill">📦 EnergyBox</span><span class="pill">🧩 組込み(STM32/FreeRTOS)</span>
 		<div class="spacer"></div>
 		<div class="live"><span class="blip"></span>LIVE / 単一ソース同期</div>
 	</div>
 
 	<div class="body">
-		<!-- activity -->
-		<div class="activity">
-			<div class="act on" title="データフロー">🔀</div>
-			<div class="act" title="構造ツリー">🌳</div>
-			<div class="act" title="ルール/記憶層">🗂️</div>
-			<div class="act" title="テスト">🧪</div>
-			<div class="act" title="CCAFデバッグ">🐞</div>
+		<!-- ===== feature sidebar ===== -->
+		<div class="sidebar">
+			<div class="sb-h">機能フロー / FEATURE FLOWS</div>
+			<div class="sb-all on" id="allBtn" onclick="setFeature(null)">⊞ すべての機能を表示</div>
+			<div id="featList"></div>
 		</div>
 
-		<!-- sidebar: component selection -->
-		<div class="sidebar" id="sidebar"></div>
-
-		<!-- center: canvas + dock -->
+		<!-- ===== center ===== -->
 		<div class="center">
 			<div class="canvas-head">
-				<h3>🔀 データフロー — タスク ⇄ キュー ⇄ 変数</h3>
+				<h3>🔀 データフロー</h3>
+				<span class="now" id="nowFeat">すべて</span>
+				<span class="btn" onclick="autoLayout()">↻ 自動整列</span>
+				<span style="font-size:10px;color:var(--dim)">ノードはドラッグで移動（20pxグリッド吸着）</span>
 				<div class="legend">
+					<span class="lg"><span class="b" style="background:var(--dev)"></span>デバイス</span>
 					<span class="lg"><span class="b" style="background:var(--task)"></span>タスク</span>
 					<span class="lg"><span class="b" style="background:var(--queue)"></span>キュー</span>
-					<span class="lg"><span class="b" style="background:var(--var)"></span>変数/構造体</span>
+					<span class="lg"><span class="b" style="background:var(--var)"></span>変数</span>
 					<span class="lg"><span class="b" style="background:var(--ext)"></span>外部</span>
 				</div>
 			</div>
-			<div class="canvas-wrap" id="cwrap">
-				<div class="canvas" id="canvas">
-					<svg class="edges" id="edges"></svg>
-				</div>
-			</div>
-
-			<!-- bottom dock -->
+			<div class="canvas-wrap"><div class="canvas" id="canvas"><svg class="edges" id="edges"></svg></div></div>
 			<div class="dock">
 				<div class="tabs">
-					<div class="tab on" data-dock="list">📋 変数 / キュー一覧 <span class="cnt" id="c-list"></span></div>
-					<div class="tab" data-dock="rules">🗂️ ルール <span class="cnt" id="c-rules"></span></div>
-					<div class="tab" data-dock="tests">🧪 テスト <span class="cnt" id="c-tests"></span></div>
+					<div class="tab on" data-dock="list">📋 変数 / キュー一覧</div>
+					<div class="tab" data-dock="rules">🗂️ ルール</div>
 					<div class="tab" data-dock="debug">🐞 CCAFデバッグ</div>
 				</div>
 				<div class="dock-body" id="dockBody"></div>
 			</div>
 		</div>
 
-		<!-- detail panel -->
+		<!-- ===== detail ===== -->
 		<div class="detail" id="detail"></div>
 	</div>
 
 	<div class="status">
-		<span>🧠 agent: <b>Claude Code</b></span>
-		<span>🧵 tasks: <b>4</b></span>
-		<span>📨 queues: <b>2</b></span>
-		<span>🗂️ rules: <b id="st-rules">5</b> active <span class="s-warn" id="st-stale">(1 stale)</span></span>
-		<span class="s-bad" id="st-drift">⚠ drift: 1 (telemetry 30s≠60s)</span>
+		<span>🧠 <b>Claude Code</b></span>
+		<span>🔋 devices: <b>2</b></span><span>🧵 tasks: <b>4</b></span><span>📨 queues: <b>2</b></span>
+		<span>🗂️ rules: <b id="st-rules">5</b> <span class="s-warn">(1 stale)</span></span>
+		<span class="s-bad">⚠ drift: 1 (telemetry 30s≠60s)</span>
 	</div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
-/* ================= data: EnergyBox firmware ================= */
+/* ============ default grid layout (20px aligned) ============ */
+const HOME={
+	pmeter:[40,80], modbus_task:[240,80], q_meas:[460,160],
+	ctrl_task:[680,40], g_state:[920,40],
+	g_config:[460,320], telemetry_task:[680,260], q_tx:[920,260],
+	net_task:[1140,260], eth_phy:[1140,380], azure:[1140,120],
+};
 const nodes=[
-	{id:'modbus_task',kind:'task',x:24,y:120,w:158,nm:'modbus_task',ic:'⚙',sub:'prio 3 / 100ms',
-		task:{prio:3,period:'100ms',stack:'512B',reads:['g_config.modbus_addr'],writes:['q_meas'],
-		proc:[['modbus_read(holding[0..15])','fn'],['voltage = raw * 0.1',''],['m = Meas_t{voltage,current,ts}',''],['xQueueSend(q_meas, &m, 0)','fn'],['vTaskDelay(100ms)','fn']]}},
-	{id:'q_meas',kind:'queue',x:248,y:124,w:138,nm:'q_meas',ic:'📨',sub:'Meas_t × 8',
-		queue:{item:'Meas_t',depth:8,prod:['modbus_task'],cons:['ctrl_task','telemetry_task'],
+	{id:'pmeter',kind:'dev',w:170,nm:'電力計 (Modbus slave)',ic:'🔋',sub:'addr 1',features:['meas'],
+		dev:{bus:'Modbus RTU / RS485 (USART2)',period:'poll 100ms',regs:'holding 0x0000–0x000F'}},
+	{id:'modbus_task',kind:'task',w:166,nm:'modbus_task',ic:'⚙',sub:'prio 3',features:['meas'],
+		task:{prio:3,period:'100ms',stack:'512B',reads:['電力計(RS485)','g_config.modbus_addr'],writes:['q_meas'],
+		proc:[['modbus_read(holding[0..15])','fn'],['voltage = raw * 0.1',''],['m = Meas_t{voltage,current,ts}',''],['xQueueSend(q_meas,&m,0)','fn'],['vTaskDelay(100ms)','fn']]}},
+	{id:'q_meas',kind:'queue',w:142,nm:'q_meas',ic:'📨',sub:'Meas_t ×8',features:['meas','ctrl','telem'],
+		queue:{item:'Meas_t',depth:8,occ:3,prod:['modbus_task'],cons:['ctrl_task','telemetry_task'],
 		members:[['voltage','uint16'],['current','uint16'],['ts','uint32']]}},
-	{id:'ctrl_task',kind:'task',x:452,y:28,w:162,nm:'ctrl_task',ic:'⚙',sub:'prio 4 / event',
-		task:{prio:4,period:'event',stack:'768B',reads:['q_meas'],writes:['g_state'],
-		proc:[['xQueueReceive(q_meas, &m, portMAX)','fn'],['if(m.voltage < LIMIT) fault()',''],['g_state.mode = RUN',''],['g_state.voltage = m.voltage','']]}},
-	{id:'telemetry_task',kind:'task',x:452,y:206,w:162,nm:'telemetry_task',ic:'⚙',sub:'prio 1 / 30s ⚠',drift:true,
-		task:{prio:1,period:'30s (spec 60s)',stack:'1KB',reads:['q_meas','g_config','g_state'],writes:['q_tx'],drift:2,
-		proc:[['xQueueReceive(q_meas, &m, portMAX)','fn'],['now - last >= g_config.telem_period_s','drift','// 実装30s / 仕様60s'],['payload = build_json(m, g_state)','fn'],['xQueueSend(q_tx, &payload, 0)','fn']]}},
-	{id:'g_state',kind:'var',x:680,y:28,w:170,nm:'g_state',ic:'▤',sub:'SysState_t (shared)',
+	{id:'ctrl_task',kind:'task',w:166,nm:'ctrl_task',ic:'⚙',sub:'prio 4 / event',features:['ctrl'],
+		task:{prio:4,period:'event(q_meas)',stack:'768B',reads:['q_meas'],writes:['g_state'],
+		proc:[['xQueueReceive(q_meas,&m,portMAX)','fn'],['if(m.voltage<LIMIT) fault()',''],['g_state.mode = RUN',''],['g_state.voltage = m.voltage','']]}},
+	{id:'g_state',kind:'var',w:176,nm:'g_state',ic:'▤',sub:'SysState_t (shared)',features:['ctrl','telem'],
 		members:[['mode','enum INIT/CONNECT/RUN/FAULT'],['fault_code','uint8'],['uptime_s','uint32'],['voltage','float']]},
-	{id:'g_config',kind:'var',x:248,y:268,w:170,nm:'g_config',ic:'▤',sub:'Config_t (shared)',
+	{id:'g_config',kind:'var',w:176,nm:'g_config',ic:'▤',sub:'Config_t (shared)',features:['telem','meas'],
 		members:[['telem_period_s','uint16 = 60'],['modbus_addr','uint8 = 1'],['mqtt_host','char[64]']]},
-	{id:'q_tx',kind:'queue',x:688,y:208,w:130,nm:'q_tx',ic:'📨',sub:'TxMsg_t × 4',
-		queue:{item:'TxMsg_t',depth:4,prod:['telemetry_task'],cons:['net_task'],
+	{id:'telemetry_task',kind:'task',w:170,nm:'telemetry_task',ic:'⚙',sub:'prio 1',features:['telem'],drift:true,
+		task:{prio:1,period:'30s ⚠ (spec 60s)',stack:'1KB',reads:['q_meas','g_config','g_state'],writes:['q_tx'],
+		proc:[['xQueueReceive(q_meas,&m,portMAX)','fn'],['now-last >= g_config.telem_period_s','drift','// 実装30s / 仕様60s'],['payload = build_json(m,g_state)','fn'],['xQueueSend(q_tx,&payload,0)','fn']]}},
+	{id:'q_tx',kind:'queue',w:132,nm:'q_tx',ic:'📨',sub:'TxMsg_t ×4',features:['telem','net'],
+		queue:{item:'TxMsg_t',depth:4,occ:1,prod:['telemetry_task'],cons:['net_task'],
 		members:[['json','char[256]'],['len','uint16'],['retry','uint8']]}},
-	{id:'net_task',kind:'task',x:884,y:208,w:150,nm:'net_task',ic:'⚙',sub:'prio 2 / event',
-		task:{prio:2,period:'event',stack:'2KB',reads:['q_tx'],writes:['Azure IoT'],
-		proc:[['xQueueReceive(q_tx, &p, portMAX)','fn'],['mqtt_publish(host, p.json)','fn'],['if(err) backoff_retry()','fn']]}},
-	{id:'azure',kind:'ext',x:1080,y:212,w:128,nm:'Azure IoT',ic:'☁',sub:'MQTT / cloud'},
+	{id:'net_task',kind:'task',w:150,nm:'net_task',ic:'⚙',sub:'prio 2 / event',features:['net'],
+		task:{prio:2,period:'event(q_tx)',stack:'2KB',reads:['q_tx'],writes:['Ethernet PHY','Azure'],
+		proc:[['xQueueReceive(q_tx,&p,portMAX)','fn'],['mqtt_publish(host,p.json)','fn'],['if(err) backoff_retry()','fn']]}},
+	{id:'eth_phy',kind:'dev',w:150,nm:'Ethernet PHY',ic:'🔌',sub:'LAN8742 / RMII',features:['net'],
+		dev:{bus:'RMII (ETH)',period:'link 100Mbps',regs:'MDIO 0x00–0x1F'}},
+	{id:'azure',kind:'ext',w:132,nm:'Azure IoT',ic:'☁',sub:'MQTT / cloud',features:['net']},
 ];
 const edges=[
-	{from:'modbus_task',to:'q_meas',l:'Meas_t'},
-	{from:'q_meas',to:'ctrl_task',l:'Meas_t'},
-	{from:'q_meas',to:'telemetry_task',l:'Meas_t'},
+	{from:'pmeter',to:'modbus_task',l:'holding regs',p:'100ms'},
+	{from:'modbus_task',to:'q_meas',l:'Meas_t',p:'100ms'},
+	{from:'q_meas',to:'ctrl_task',l:'Meas_t',p:'event'},
+	{from:'q_meas',to:'telemetry_task',l:'Meas_t',p:'gate 60s'},
 	{from:'ctrl_task',to:'g_state',l:'write'},
-	{from:'g_config',to:'telemetry_task',l:'period'},
-	{from:'telemetry_task',to:'q_tx',l:'TxMsg_t'},
-	{from:'q_tx',to:'net_task',l:'TxMsg_t'},
-	{from:'net_task',to:'azure',l:'MQTT'},
+	{from:'g_config',to:'telemetry_task',l:'period',drift:true},
+	{from:'g_state',to:'telemetry_task',l:'read'},
+	{from:'telemetry_task',to:'q_tx',l:'TxMsg_t',p:'60s'},
+	{from:'q_tx',to:'net_task',l:'TxMsg_t',p:'event'},
+	{from:'net_task',to:'eth_phy',l:'frames'},
+	{from:'net_task',to:'azure',l:'MQTT/TLS'},
+];
+const features=[
+	{id:'meas',ic:'📐',nm:'計測 (Measurement)',period:'100ms',
+		desc:'電力計をModbus RTU(RS485)で100ms周期ポーリングし、grid_voltage等を Meas_t として q_meas へ供給。',
+		tests:[{n:'modbus_crc_test',p:true,x:'CRC16'},{n:'reg_scale_test',p:true,x:'×0.1'},{n:'poll_period_test',p:true,x:'100ms'}]},
+	{id:'ctrl',ic:'🛠',nm:'制御 (Control)',period:'event',
+		desc:'q_meas の測定値を評価し、閾値で異常検出して系統状態 g_state を更新。RUN/FAULT を遷移。',
+		tests:[{n:'state_fault_test',p:true},{n:'ctrl_latency_test',p:true,x:'<5ms'}]},
+	{id:'telem',ic:'📡',nm:'テレメトリ (Telemetry)',period:'60s',warn:true,
+		desc:'g_config.telem_period_s 周期で測定値+状態を JSON 化し q_tx へ。現在 実装30s ≠ 仕様60s でドリフト中。',
+		tests:[{n:'telemetry_period_test',p:false,x:'60s期待/30s'},{n:'payload_schema_test',p:true}]},
+	{id:'net',ic:'🌐',nm:'通信 (Network)',period:'event',
+		desc:'q_tx のペイロードを Ethernet PHY 経由・MQTT/TLS で Azure IoT へ送信。失敗時は指数バックオフで再接続。',
+		tests:[{n:'reconnect_backoff_test',p:true},{n:'tls_handshake_test',p:true},{n:'mqtt_qos1_test',p:true}]},
 ];
 let rules=[
 	{id:'r1',t:'Modbusレジスタはビッグエンディアン',src:'CLAUDE.md',on:true},
@@ -258,170 +269,164 @@ let rules=[
 	{id:'r4',t:'telemetryは30秒周期で送信',src:'CLAUDE.md(古い)',on:true,bad:'⚠ 仕様(60s)と矛盾'},
 	{id:'r5',t:'全関数にDoxygenコメント',src:'CLAUDE.md',on:false},
 ];
-const tests=[
-	{n:'modbus_crc_test',pass:true,x:'CRC16一致'},
-	{n:'reg_scale_test',pass:true,x:'×0.1'},
-	{n:'telemetry_period_test',pass:false,x:'60s期待/30s'},
-	{n:'reconnect_backoff_test',pass:true,x:''},
-];
 const dbg=[
 	{c:'ok',h:'spec.yaml 読込',d:'telemetry_task の仕様(60s)を取得'},
 	{c:'warn',h:'記憶層ルール5件ロード',d:'古い r4(30s) を含む'},
-	{c:'bad',h:'telemetry_task 生成',d:'r4適用 → 30sでコード化 ＝ 仕様(60s)からドリフト'},
+	{c:'bad',h:'telemetry_task 生成',d:'r4適用→30sでコード化 ＝ 仕様(60s)からドリフト'},
 	{c:'bad',h:'ドリフト検出',d:'telemetry_period_test 失敗に波及'},
 ];
 
-/* ================= render canvas ================= */
+/* ============ state ============ */
 const NODE=Object.fromEntries(nodes.map(n=>[n.id,n]));
-let selId=null, expanded={};
+nodes.forEach(n=>{n.x=HOME[n.id][0];n.y=HOME[n.id][1];});
+let selId='telemetry_task', activeFeat=null, expanded={};
 
+/* ============ nodes ============ */
 function renderNodes(){
 	const c=document.getElementById('canvas');
 	c.querySelectorAll('.node').forEach(e=>e.remove());
 	nodes.forEach(n=>{
 		const el=document.createElement('div');
-		el.className='node '+n.kind+(n.drift?' drift':'')+(selId===n.id?' sel':'');
+		const dim=activeFeat && !n.features.includes(activeFeat);
+		el.className='node '+n.kind+(n.drift?' drift':'')+(selId===n.id?' sel':'')+(dim?' dim':'');
 		el.id='n-'+n.id; el.style.left=n.x+'px'; el.style.top=n.y+'px'; el.style.width=n.w+'px';
-		const expandable=(n.members)?true:false;
+		const exp=!!n.members;
+		const per = n.task?n.task.period:(n.dev?n.dev.period:'');
 		el.innerHTML=`<div class="nh"><span class="ic">${n.ic}</span><span class="nm">${n.nm}</span>`+
-			(expandable?`<span class="caret">${expanded[n.id]?'▾':'▸'}</span>`:'')+
+			(exp?`<span class="caret">${expanded[n.id]?'▾':'▸'}</span>`:'')+
 			`<span class="ki ${n.kind}">${n.kind}</span></div>`+
-			`<div class="nsub">${n.sub}</div>`+
+			`<div class="nsub">${n.sub}${per?`<span class="per">${per}</span>`:''}</div>`+
 			(n.members?`<div class="members ${expanded[n.id]?'show':''}">`+
 				n.members.map(m=>`<div class="mrow"><span class="mn mono">${m[0]}</span><span class="mt mono">${m[1]}</span></div>`).join('')+`</div>`:'');
-		el.onclick=(e)=>{
-			selId=n.id; openDetail(n);
-			if(expandable){ expanded[n.id]=!expanded[n.id]; }
-			renderNodes(); renderSidebar(); requestAnimationFrame(drawEdges);
-		};
+		el.addEventListener('mousedown',e=>startDrag(e,n,el));
 		c.appendChild(el);
 	});
 }
+function onNodeClick(n){selId=n.id; if(n.members)expanded[n.id]=!expanded[n.id]; openDetail(n); renderNodes(); requestAnimationFrame(drawEdges);}
 
+/* ============ drag w/ grid snap ============ */
+let drag=null;
+function snap(v){return Math.max(0,Math.round(v/20)*20);}
+function startDrag(e,n,el){if(e.button!==0)return; drag={n,el,sx:e.clientX,sy:e.clientY,ox:n.x,oy:n.y,moved:false}; document.body.style.userSelect='none'; e.preventDefault();}
+window.addEventListener('mousemove',e=>{
+	if(!drag)return;
+	const dx=e.clientX-drag.sx, dy=e.clientY-drag.sy;
+	if(Math.abs(dx)>3||Math.abs(dy)>3)drag.moved=true;
+	drag.n.x=snap(drag.ox+dx); drag.n.y=snap(drag.oy+dy);
+	drag.el.style.left=drag.n.x+'px'; drag.el.style.top=drag.n.y+'px';
+	drawEdges();
+});
+window.addEventListener('mouseup',()=>{if(!drag)return; if(!drag.moved)onNodeClick(drag.n); document.body.style.userSelect=''; drag=null;});
+function autoLayout(){nodes.forEach(n=>{n.x=HOME[n.id][0];n.y=HOME[n.id][1];}); renderNodes(); requestAnimationFrame(drawEdges); toast('↻ グリッドに自動整列しました');}
+
+/* ============ edges ============ */
 function drawEdges(){
-	const svg=document.getElementById('edges'); const c=document.getElementById('canvas');
+	const svg=document.getElementById('edges'), c=document.getElementById('canvas');
 	c.querySelectorAll('.elabel').forEach(e=>e.remove());
-	const W=c.offsetWidth, H=c.offsetHeight;
-	svg.setAttribute('width',W); svg.setAttribute('height',H);
-	let s=`<defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">`+
-		`<path d="M0,0 L7,3 L0,6 Z" fill="#6f86ad"/></marker>`+
-		`<marker id="ahd" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#ff8a93"/></marker></defs>`;
+	svg.setAttribute('width',c.offsetWidth); svg.setAttribute('height',c.offsetHeight);
+	let s=`<defs>`+
+		`<marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#6f86ad"/></marker>`+
+		`<marker id="ahd" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#ff8a93"/></marker>`+
+		`<marker id="ahh" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4fd1c5"/></marker></defs>`;
 	edges.forEach(e=>{
 		const a=document.getElementById('n-'+e.from), b=document.getElementById('n-'+e.to);
 		if(!a||!b)return;
 		let x1=a.offsetLeft+a.offsetWidth, y1=a.offsetTop+a.offsetHeight/2;
 		let x2=b.offsetLeft, y2=b.offsetTop+b.offsetHeight/2;
-		if(b.offsetLeft+b.offsetWidth/2 < a.offsetLeft){ x1=a.offsetLeft; x2=b.offsetLeft+b.offsetWidth; }
-		const dx=Math.max(40,Math.abs(x2-x1)*0.45);
-		const drift=(e.from==='g_config'&&e.to==='telemetry_task');
-		const col=drift?'#ff8a93':'#6f86ad';
-		s+=`<path d="M ${x1} ${y1} C ${x1+dx} ${y1}, ${x2-dx} ${y2}, ${x2} ${y2}" fill="none" stroke="${col}" stroke-width="1.7" marker-end="url(#${drift?'ahd':'ah'})" opacity="${(selId===e.from||selId===e.to)?1:.62}"/>`;
-		// label
+		if(b.offsetLeft+b.offsetWidth/2 < a.offsetLeft){x1=a.offsetLeft; x2=b.offsetLeft+b.offsetWidth;}
+		const dx=Math.max(36,Math.abs(x2-x1)*0.45);
+		const inFeat=activeFeat && NODE[e.from].features.includes(activeFeat) && NODE[e.to].features.includes(activeFeat);
+		let col='#6f86ad', mk='ah', wdt=1.6, op=.6;
+		if(e.drift){col='#ff8a93'; mk='ahd';}
+		if(inFeat){col=e.drift?'#ff8a93':'#4fd1c5'; mk=e.drift?'ahd':'ahh'; wdt=2.4; op=1;}
+		else if(activeFeat){op=.16;}
+		else{op=e.drift?.9:.6;}
+		s+=`<path d="M ${x1} ${y1} C ${x1+dx} ${y1}, ${x2-dx} ${y2}, ${x2} ${y2}" fill="none" stroke="${col}" stroke-width="${wdt}" marker-end="url(#${mk})" opacity="${op}"/>`;
 		const lab=document.createElement('div'); lab.className='elabel';
-		lab.style.left=((x1+x2)/2)+'px'; lab.style.top=((y1+y2)/2)+'px'; lab.textContent=e.l;
+		lab.style.left=((x1+x2)/2)+'px'; lab.style.top=((y1+y2)/2)+'px';
+		lab.innerHTML=e.l+(e.p?` <span class="per">· ${e.p}</span>`:'');
+		if(activeFeat&&!inFeat)lab.style.opacity=.2;
 		c.appendChild(lab);
 	});
 	svg.innerHTML=s;
 }
 
-/* ================= sidebar ================= */
-function renderSidebar(){
-	const sb=document.getElementById('sidebar');
-	const groups=[['タスク','task'],['キュー','queue'],['共有変数 / 構造体','var'],['外部','ext']];
-	sb.innerHTML='';
-	groups.forEach(([title,kind])=>{
-		const h=document.createElement('div'); h.className='sb-h'; h.textContent=title; sb.appendChild(h);
-		nodes.filter(n=>n.kind===kind).forEach(n=>{
-			const it=document.createElement('div'); it.className='sb-item'+(selId===n.id?' sel':'');
-			it.innerHTML=`<span class="sw k-${n.kind}"></span><span>${n.nm}</span>`+
-				(n.kind==='task'?`<span class="m">p${n.task.prio}</span>`:'')+
-				(n.kind==='queue'?`<span class="m">×${n.queue.depth}</span>`:'')+
-				(n.drift?'<span class="m" style="color:var(--danger)">⚠</span>':'');
-			it.onclick=()=>{selId=n.id; openDetail(n); if(n.members)expanded[n.id]=true;
-				renderNodes(); renderSidebar(); requestAnimationFrame(drawEdges);
-				document.getElementById('n-'+n.id).scrollIntoView({behavior:'smooth',block:'center',inline:'center'});};
-			sb.appendChild(it);
-		});
+/* ============ feature sidebar ============ */
+function renderFeatures(){
+	const box=document.getElementById('featList'); box.innerHTML='';
+	features.forEach(f=>{
+		const pass=f.tests.filter(t=>t.p).length, total=f.tests.length, allok=pass===total;
+		const el=document.createElement('div'); el.className='feat'+(activeFeat===f.id?' on':'');
+		el.innerHTML=`<div class="fh"><span class="fi">${f.ic}</span><span class="fn">${f.nm}</span>`+
+			`<span class="fp ${f.warn?'warn':''}">${f.period}</span></div>`+
+			`<div class="fbody"><div class="desc">${f.desc}</div>`+
+			`<div class="tt">テスト ${pass}/${total}</div>`+
+			f.tests.map(t=>`<div class="tline ${t.p?'pass':'fail'}"><span class="ti">${t.p?'✓':'✗'}</span><span>${t.n}</span><span class="tx">${t.x||''}</span></div>`).join('')+
+			`<div class="tsum">結果: <b class="${allok?'ok':'bad'}">${allok?'PASS':'FAIL ('+(total-pass)+')'}</b></div></div>`;
+		el.querySelector('.fh').onclick=()=>setFeature(activeFeat===f.id?null:f.id);
+		box.appendChild(el);
 	});
 }
-
-/* ================= detail panel ================= */
-function openDetail(n){
-	const d=document.getElementById('detail'); let html='';
-	html+=`<div class="dh"><div class="dt">${n.ic} ${n.nm} <span class="ki ${n.kind}" style="font-size:9px">${n.kind}</span></div><div class="ds">${n.sub}</div></div>`;
-	if(n.task){
-		const t=n.task;
-		html+=`<div class="dsec"><h4>属性</h4>`+
-			kv('優先度',t.prio)+kv('周期',t.period)+kv('スタック',t.stack)+`</div>`;
-		html+=`<div class="dsec"><h4>処理内容 (while(1) ループ)</h4><div class="proc mono">`+
-			t.proc.map((p,i)=>`<div class="ln ${p[1]==='drift'?'drift':''}"><span class="no">${i+1}</span><span class="cd">`+
-				fmt(p[0])+(p[2]?` <span class="cm">${p[2]}</span>`:'')+`</span></div>`).join('')+`</div></div>`;
-		html+=`<div class="dsec"><h4>入出力</h4>`+
-			`<div>読み: ${t.reads.map(x=>`<span class="chip r">▸ ${x}</span>`).join('')}</div>`+
-			`<div style="margin-top:5px">書き: ${t.writes.map(x=>`<span class="chip w">${x} ◂</span>`).join('')}</div></div>`;
-	} else if(n.queue){
-		const q=n.queue;
-		html+=`<div class="dsec"><h4>属性</h4>`+kv('item型',q.item)+kv('深さ',q.depth)+`</div>`;
-		html+=`<div class="dsec"><h4>${q.item} メンバー</h4><div class="memlist">`+
-			q.members.map(m=>`<div class="mrow"><span class="mn mono">${m[0]}</span><span class="mt mono">${m[1]}</span></div>`).join('')+`</div></div>`;
-		html+=`<div class="dsec"><h4>生産 / 消費</h4>`+
-			`<div>生産: ${q.prod.map(x=>`<span class="chip w">${x}</span>`).join('')}</div>`+
-			`<div style="margin-top:5px">消費: ${q.cons.map(x=>`<span class="chip r">${x}</span>`).join('')}</div></div>`;
-	} else if(n.members){
-		html+=`<div class="dsec"><h4>メンバー（クリックで構造体を展開/折りたたみ）</h4><div class="memlist">`+
-			n.members.map(m=>`<div class="mrow"><span class="mn mono">${m[0]}</span><span class="mt mono">${m[1]}</span></div>`).join('')+`</div></div>`;
-	} else {
-		html+=`<div class="dsec"><div class="ds">外部エンドポイント。MQTTでテレメトリを受信。</div></div>`;
-	}
-	html+=`<div class="prompt"><div class="pl">▷ このコンポーネントについてAIに確認・指示</div><div class="row">`+
-		`<input id="promptIn" placeholder="例: ${n.task?'この周期を仕様に合わせて':'この構造体に CRC を追加して'}"><button onclick="sendPrompt()">送信</button></div></div>`;
-	d.innerHTML=html;
+function setFeature(fid){
+	activeFeat=fid;
+	document.getElementById('allBtn').classList.toggle('on',!fid);
+	document.getElementById('nowFeat').textContent=fid?features.find(f=>f.id===fid).nm:'すべて';
+	renderFeatures(); renderNodes(); requestAnimationFrame(drawEdges);
 }
-function kv(k,v){return `<div class="kv"><span class="vk">${k}</span><span class="vv">${v}</span></div>`;}
-function fmt(s){return s.replace(/(xQueueSend|xQueueReceive|modbus_read|vTaskDelay|build_json|mqtt_publish|backoff_retry)/g,'<span class="fn">$1</span>');}
-function sendPrompt(){const v=(document.getElementById('promptIn')||{}).value||'';toast('🧠 AIへ指示を送信: 「'+(v||'…')+'」（モック）');}
 
-/* ================= dock ================= */
+/* ============ detail ============ */
+function openDetail(n){
+	const d=document.getElementById('detail'); let h='';
+	h+=`<div class="dh"><div class="dt">${n.ic} ${n.nm} <span class="ki ${n.kind}" style="font-size:9px">${n.kind}</span></div><div class="ds">${n.sub}</div></div>`;
+	if(n.dev){h+=`<div class="dsec"><h4>リソースデバイス</h4>`+kv('バス',n.dev.bus)+kv('周期/速度',n.dev.period)+kv('レジスタ',n.dev.regs)+`</div>`;}
+	else if(n.task){const t=n.task;
+		h+=`<div class="dsec"><h4>属性</h4>`+kv('優先度',t.prio)+kv('周期',t.period)+kv('スタック',t.stack)+`</div>`;
+		h+=`<div class="dsec"><h4>処理内容 while(1)</h4><div class="proc mono">`+
+			t.proc.map((p,i)=>`<div class="ln ${p[1]==='drift'?'drift':''}"><span class="no">${i+1}</span><span class="cd">`+fmt(p[0])+(p[2]?` <span class="cm">${p[2]}</span>`:'')+`</span></div>`).join('')+`</div></div>`;
+		h+=`<div class="dsec"><h4>入出力</h4><div>読み: ${t.reads.map(x=>`<span class="chip r">▸ ${x}</span>`).join('')}</div><div style="margin-top:5px">書き: ${t.writes.map(x=>`<span class="chip w">${x} ◂</span>`).join('')}</div></div>`;
+	} else if(n.queue){const q=n.queue;
+		h+=`<div class="dsec"><h4>属性</h4>`+kv('item型',q.item)+kv('深さ',q.depth)+kv('現在滞留',q.occ+' / '+q.depth)+`</div>`;
+		h+=`<div class="dsec"><h4>${q.item} メンバー</h4><div class="memlist">`+q.members.map(m=>`<div class="mrow"><span class="mn mono">${m[0]}</span><span class="mt mono">${m[1]}</span></div>`).join('')+`</div></div>`;
+		h+=`<div class="dsec"><h4>生産 / 消費</h4><div>生産: ${q.prod.map(x=>`<span class="chip w">${x}</span>`).join('')}</div><div style="margin-top:5px">消費: ${q.cons.map(x=>`<span class="chip r">${x}</span>`).join('')}</div></div>`;
+	} else if(n.members){
+		h+=`<div class="dsec"><h4>メンバー（ノードのクリックで展開/折りたたみ）</h4><div class="memlist">`+n.members.map(m=>`<div class="mrow"><span class="mn mono">${m[0]}</span><span class="mt mono">${m[1]}</span></div>`).join('')+`</div></div>`;
+	} else {h+=`<div class="dsec"><div class="ds">外部エンドポイント。MQTT/TLSでテレメトリを受信。</div></div>`;}
+	h+=`<div class="prompt"><div class="pl">▷ このコンポーネントをAIに確認・指示</div><div class="row"><input id="promptIn" placeholder="例: ${n.task?'周期を仕様(60s)に合わせて':'この構造体にCRCを追加して'}"><button onclick="sendPrompt()">送信</button></div></div>`;
+	d.innerHTML=h;
+}
+function kv(k,v){return `<div class="kv"><span class="vk">${k}</span><span class="vv mono">${v}</span></div>`;}
+function fmt(s){return s.replace(/(xQueueSend|xQueueReceive|modbus_read|vTaskDelay|build_json|mqtt_publish|backoff_retry)/g,'<span class="fn">$1</span>');}
+function sendPrompt(){const v=(document.getElementById('promptIn')||{}).value||'';toast('🧠 AIへ指示:「'+(v||'…')+'」（モック）');}
+
+/* ============ dock ============ */
 function renderDock(which){
 	document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.dock===which));
 	const b=document.getElementById('dockBody');
 	if(which==='list'){
-		const rows=nodes.filter(n=>n.kind!=='ext'&&n.kind!=='task');
-		b.innerHTML=`<table class="lst"><thead><tr><th>名前</th><th>種別</th><th>型 / item</th><th>生産→消費</th><th>状態</th></tr></thead><tbody>`+
-			nodes.filter(n=>n.kind==='queue'||n.kind==='var').map(n=>{
-				const type=n.queue?n.queue.item+' ×'+n.queue.depth:(n.sub.split(' ')[0]);
-				const flow=n.queue?n.queue.prod.join(',')+' → '+n.queue.cons.join(','):'shared';
-				return `<tr onclick="pick('${n.id}')"><td><span class="swatch k-${n.kind}"></span>${n.nm}</td><td>${n.kind==='queue'?'キュー':'構造体'}</td><td class="mono">${type}</td><td class="mono" style="font-size:10px">${flow}</td><td>${n.drift?'<span class="flag bad">drift</span>':'<span class="chip r">ok</span>'}</td></tr>`;
-			}).join('')+
-			nodes.filter(n=>n.kind==='task').map(n=>`<tr onclick="pick('${n.id}')"><td><span class="swatch k-task"></span>${n.nm}</td><td>タスク</td><td class="mono">prio ${n.task.prio} / ${n.task.period}</td><td class="mono" style="font-size:10px">${n.task.reads.length}in / ${n.task.writes.length}out</td><td>${n.drift?'<span class="flag bad">drift</span>':'<span class="chip r">ok</span>'}</td></tr>`).join('')+
-			`</tbody></table>`;
+		b.innerHTML=`<table class="lst"><thead><tr><th>名前</th><th>種別</th><th>型 / 周期</th><th>フロー</th><th>状態</th></tr></thead><tbody>`+
+			nodes.map(n=>{
+				let type='-',flow='-';
+				if(n.queue){type=n.queue.item+' ×'+n.queue.depth;flow=n.queue.prod.join(',')+'→'+n.queue.cons.join(',');}
+				else if(n.task){type='prio'+n.task.prio+' / '+n.task.period;flow=n.task.reads.length+'in/'+n.task.writes.length+'out';}
+				else if(n.dev){type=n.dev.period;flow=n.dev.bus;}
+				else if(n.members){type='struct';flow='shared';}
+				return `<tr onclick="pick('${n.id}')"><td><span class="swatch ki ${n.kind}"></span>${n.nm}</td><td>${n.kind}</td><td class="mono">${type}</td><td class="mono" style="font-size:10px">${flow}</td><td>${n.drift?'<span class="flag bad">drift</span>':'<span class="chip r">ok</span>'}</td></tr>`;
+			}).join('')+`</tbody></table>`;
 	} else if(which==='rules'){
-		b.innerHTML=rules.map(r=>`<div class="rrow ${r.on?'':'off'}"><span class="sw2 ${r.on?'on':''}" onclick="toggleRule('${r.id}')"></span><span style="flex:1">${r.t}</span>`+
-			(r.bad?`<span class="flag bad">${r.bad}</span>`:'')+`<span class="src">${r.src}</span></div>`).join('');
-	} else if(which==='tests'){
-		b.innerHTML=tests.map(t=>`<div class="test ${t.pass?'pass':'fail'}"><span class="ti">${t.pass?'✓':'✗'}</span><span>${t.n}</span><span class="tx">${t.x}</span></div>`).join('');
+		b.innerHTML=rules.map(r=>`<div class="rrow ${r.on?'':'off'}"><span class="sw2 ${r.on?'on':''}" onclick="toggleRule('${r.id}')"></span><span style="flex:1">${r.t}</span>`+(r.bad?`<span class="flag bad">${r.bad}</span>`:'')+`<span class="src">${r.src}</span></div>`).join('');
 	} else if(which==='debug'){
 		b.innerHTML=dbg.map(s=>`<div class="step ${s.c}"><b>${s.h}</b> <span class="d">— ${s.d}</span></div>`).join('');
 	}
 }
-function pick(id){selId=id;const n=NODE[id];openDetail(n);if(n.members)expanded[id]=true;renderNodes();renderSidebar();requestAnimationFrame(drawEdges);
-	document.getElementById('n-'+id).scrollIntoView({behavior:'smooth',block:'center',inline:'center'});}
-function toggleRule(id){const r=rules.find(x=>x.id===id);r.on=!r.on;renderDock('rules');
-	const act=rules.filter(x=>x.on).length;document.getElementById('st-rules').textContent=act;
-	if(id==='r4'&&!r.on)toast('✓ 古いルール#4を無効化しました');}
+function pick(id){selId=id;const n=NODE[id];if(n.members)expanded[id]=true;openDetail(n);renderNodes();requestAnimationFrame(drawEdges);document.getElementById('n-'+id).scrollIntoView({behavior:'smooth',block:'center',inline:'center'});}
+function toggleRule(id){const r=rules.find(x=>x.id===id);r.on=!r.on;renderDock('rules');document.getElementById('st-rules').textContent=rules.filter(x=>x.on).length;if(id==='r4'&&!r.on)toast('✓ 古いルール#4を無効化');}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);}
-
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>renderDock(t.dataset.dock));
-document.getElementById('c-rules').textContent=rules.length;
-document.getElementById('c-tests').textContent=tests.filter(t=>t.pass).length+'/'+tests.length;
-document.getElementById('c-list').textContent=nodes.filter(n=>n.kind==='queue'||n.kind==='var').length+nodes.filter(n=>n.kind==='task').length;
 
-/* ================= init ================= */
-renderSidebar(); renderNodes(); renderDock('list');
-openDetail(NODE['telemetry_task']); selId='telemetry_task'; renderNodes(); renderSidebar();
+/* ============ init ============ */
+renderFeatures(); renderNodes(); renderDock('list'); openDetail(NODE['telemetry_task']);
 requestAnimationFrame(drawEdges);
-window.addEventListener('resize',drawEdges);
-document.getElementById('cwrap').addEventListener('scroll',()=>{});
+window.addEventListener('resize',()=>requestAnimationFrame(drawEdges));
 </script>
 </body>
 </html>
