@@ -367,6 +367,89 @@ flowchart LR
 		</div>
 	</section>
 
+	<!-- ============ 4+ 差別化の再定義とプロダクト設計（v3追補） ============ -->
+	<section>
+		<h2 class="sec"><span class="num" style="background:var(--accent2);color:#062a26">v3</span>差別化の再定義とプロダクト設計思想</h2>
+		<p>議論を経て、差別化の軸を「組込み縦深」から<strong>「AIエージェント時代に新しく生まれた問題を、単一ライブ・コックピットで解く」</strong>へ再定義する。<strong>組込みは“差別化”ではなく“堀”</strong>。差別化の本体は、LLMエージェントが普及して初めて生まれた痛み（ドリフト・レポート乱造・記憶層の腐敗）を、既存ツールが構造的に持っていない単一画面で解くことにある。</p>
+
+		<h3>差別化テーゼ（確定版）</h3>
+		<div class="callout ok">
+			<strong>AIと人間が「単一のライブな真実」を共有し、内部構造を正確に指定する。</strong> その結果、実装・動作・テストが常に<strong>1枚の階層グリッド・ダッシュボード</strong>に正しく可視化され続ける。＝ レポートを別途作らせない／記憶層（ルール）も見えて編集できる／動作・テストも同じ1ソースから出る。
+		</div>
+
+		<h3>差別化は2軸の“掛け算”（混ぜると弱くなる）</h3>
+		<table>
+			<thead><tr><th style="width:18%">軸</th><th>中身</th><th style="width:30%">役割</th></tr></thead>
+			<tbody>
+				<tr><td><strong>能力軸</strong><br>（なぜ選ばれる）</td><td>単一ライブソース型コックピット。下記4設計原則。<strong>ここが本当の発明</strong>。</td><td class="good">顧客が金を払う理由。だが横断的痛みゆえ水平勢(Kiro/Tessl/Cursor)と同じ海。</td></tr>
+				<tr><td><strong>堀軸</strong><br>（なぜ潰されない）</td><td>組込みの内部構造を“正確に指定”できる縦深＋創業者の専門資産。</td><td class="good">大手が降りてこない理由。Webは構造が緩く“正確な指定”の価値が薄い＝組込みでこそ跳ねる。</td></tr>
+			</tbody>
+		</table>
+		<div class="callout"><strong>能力軸で“選ばれ”、堀軸で“潰されない”。</strong> 両者は対立でなく掛け算。コックピット能力 × 組込みの内部構造精度 ＝ 顧客が払い、かつ大手が来ない交点。</div>
+
+		<h3>Simulink論点の正確化（専門家に崩されない言い方）</h3>
+		<p>「Simulinkのコード生成はブラックボックスだから差別化」と言うと、MBD専門家に一発で崩される（Embedded Coderは <strong>model→C がブロック単位でトレース可能・シミュレーションとビット一致</strong>が売り）。正しい差別化の言い方は次：</p>
+		<table>
+			<thead><tr><th style="width:30%">レイヤ</th><th>Simulink</th><th>あなたのコックピット</th></tr></thead>
+			<tbody>
+				<tr><td>論理 model→C</td><td class="good">透明・トレース可（彼らの強み）</td><td>同等を狙わない（敬意）</td></tr>
+				<tr><td>物理 C→バイナリの実現構造<br>（最適化/スタック/ISRレイテンシ/メモリマップ）</td><td class="bad">モデルに映らない＝実現構造は不可視</td><td class="good">“実現された内部構造そのもの”をライブに映す</td></tr>
+				<tr><td>モデル外（手書きドライバ/RTOS糊/統合後の実ファーム）</td><td class="bad">単一画面に載らない</td><td class="good">手書き＋AI生成を含む全体を1ソースに統合</td></tr>
+				<tr><td>AIエージェント</td><td class="bad">ループに不在（決定論ルール生成）</td><td class="good">LLM前提。ドリフト/レポート乱造/記憶層腐敗まで面倒を見る</td></tr>
+			</tbody>
+		</table>
+
+		<h3>コックピットの設計思想（4原則）</h3>
+		<div class="grid2">
+			<div class="card">
+				<h4>① モジュール式・成果物に合わせて入替</h4>
+				<p>製品は <strong>「コックピットの殻(shell)」＋「ドメインモジュール」</strong>の二層。成果物（コード/資料）に合わせてモジュールを差し替える。<strong>v0は組込みモジュール</strong>を載せるが、殻は将来 Web/他ドメインのモジュールに入替できる。</p>
+				<p class="muted" style="margin-top:6px"><strong>これは設計思想であると同時に“戦略の具現化”</strong>：殻＝水平の能力軸、モジュール＝縦の堀軸。組込み需要が薄ければモジュールだけ差し替えて殻は残せる＝事業リスクの逃げ道にもなる。</p>
+			</div>
+			<div class="card">
+				<h4>② ルールのカード化・インタラクティブ</h4>
+				<p>記憶層の全ルール/制約を<strong>カードとして可視化</strong>。ユーザーが<strong>有効化・変更・削除</strong>を直接操作。出典（どのファイル由来か）・矛盾・陳腐化をハイライト。<strong>全ルールの全体像を一目で把握できるUI</strong>＝“記憶層インスペクタ”。これは既存ツールが構造的に持たない新規ペイン。</p>
+			</div>
+			<div class="card">
+				<h4>③ 仕様のシングルソース管理UI</h4>
+				<p>仕様を単一の真実として管理するUI。<strong>動作状況・テスト結果も同じ単一ソース</strong>から派生して表示。別ファイル/別コンソールに散らさない＝状況把握レポートの乱造を撲滅。</p>
+			</div>
+			<div class="card">
+				<h4>④ グリッドUIで整然と配置</h4>
+				<p>各ペインを<strong>グリッドレイアウト</strong>でドラッグ/リサイズ配置（dashboard型）。1画面でAIと人間が同じ盤面を見て操作する。</p>
+			</div>
+		</div>
+
+		<h3>ダッシュボード構成（単一ソース → グリッド配置パネル）</h3>
+		<div class="mermaid">
+flowchart TB
+	SSOT["単一ソース (Single Source of Truth)<br>spec / rules / behavior / tests を1ストアに"]
+	subgraph GRID["グリッド・ダッシュボード（パネルをグリッド配置）"]
+		P1["構造ペイン<br>階層ドリルダウン＝現状実装そのもの"]
+		P2["ルールカード・ペイン<br>有効化/変更/削除・全ルール俯瞰"]
+		P3["仕様ペイン<br>シングルソース管理UI"]
+		P4["動作・テストペイン<br>フロー＋テスト結果"]
+	end
+	MOD["ドメインモジュール（入替可）<br>v0=組込み → 将来 Web/他"]
+	MCP["MCPサーバ"]
+	AGENT["Claude Code / Codex"]
+	SSOT --> P1
+	SSOT --> P2
+	SSOT --> P3
+	SSOT --> P4
+	MOD -. "成果物に合わせ差替" .-> SSOT
+	SSOT <--> MCP
+	MCP <--> AGENT
+	P1 -. "drift警告" .-> SSOT
+	classDef core fill:#16293f,stroke:#4fd1c5,color:#cfeefa;
+	class SSOT,P1,P2,P3,P4 core;
+		</div>
+
+		<div class="callout warn">
+			<strong>一人開発の現実（モジュール化の罠回避）:</strong> 「入替可能」は<strong>モジュールAPI(インターフェース)だけ綺麗に設計</strong>し、v0で実際に作るのは<strong>組込みモジュール1個だけ</strong>に割り切る＝<strong>“modular-ready, not modular-now”</strong>。最初から複数モジュールを作ると完成しない。同様に、ルールカード②は read＋toggle/delete から始め、複雑な編集UIは後送り。
+		</div>
+	</section>
+
 	<!-- ============ 5 収益性 ============ -->
 	<section>
 		<h2 class="sec"><span class="num">5</span>収益性の現実性（年1000万円の検証）</h2>
