@@ -446,7 +446,7 @@ flowchart TB
 		</div>
 
 		<div class="callout ok">
-			<strong>🖥 動く画面イメージ（インタラクティブ・モックアップ）:</strong> 同梱の <a href="cockpit_mockup.html" style="color:var(--accent2)"><strong>cockpit_mockup.html</strong></a> をブラウザで開くと、EnergyBox（Modbus/FreeRTOS/LwIP）の実例で本ダッシュボードを操作できる。<strong>「▶ シナリオ実演」</strong>で「CCAFが古いルール#4を適用→telemetryが仕様(60s)からdrift→検出→仕様に合わせて修正→テスト緑化」までが再生され、構造・仕様・ルールカード・テスト・CCAFデバッグの5ペインが単一ソースから連動する様子が体感できる。
+			<strong>🖥 動く画面イメージ（インタラクティブ・モックアップ）:</strong> 同梱の <a href="cockpit_mockup.html" style="color:var(--accent2)"><strong>cockpit_mockup.html</strong></a> をブラウザで開くと、EnergyBox（Modbus/FreeRTOS/LwIP）の実例でメイン画面を操作できる。中央は<strong>データフロー・キャンバス（タスク ⇄ キュー ⇄ 共有変数の処理フロー）</strong>。左サイドバーで対象を選択切替、<strong>構造体/変数ノードはクリックでメンバー展開/折りたたみ</strong>、<strong>タスクはクリックで while(1) 処理内容が右ペインに表示</strong>。下部ドックで「変数/キュー一覧・ルール・テスト・CCAFデバッグ」を切替でき、telemetry が仕様(60s)から実装(30s)へドリフトしている様子が一覧で追える。
 		</div>
 
 		<div class="callout warn">
