@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>設計コックピット構想 — 検討まとめ / 再検討用ブリーフ</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true,theme:"base",themeVariables:{primaryColor:"#15233b",primaryTextColor:"#e8edf5",primaryBorderColor:"#3a6ea5",lineColor:"#7fa8d4",fontSize:"13px",fontFamily:"system-ui,sans-serif"}});</script>
+<style>
+	:root{--bg:#0e1726;--panel:#15233b;--panel2:#1b2d49;--ink:#e8edf5;--muted:#9fb2cc;--accent:#f0a830;--accent2:#4fd1c5;--danger:#ff6b6b;--ok:#5fd07a;--warn:#f3c052;--line:#2c4368;--purple:#b18cf0;}
+	*{box-sizing:border-box;}
+	body{margin:0;background:linear-gradient(160deg,#0b1320,#0e1726 60%,#101d33);color:var(--ink);line-height:1.85;letter-spacing:.01em;
+		font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",system-ui,sans-serif;}
+	.wrap{max-width:1060px;margin:0 auto;padding:52px 26px 96px;}
+	header.hero{border-left:5px solid var(--accent);padding:8px 0 8px 24px;margin-bottom:8px;}
+	.kicker{color:var(--accent);font-size:13px;letter-spacing:.22em;font-weight:700;}
+	h1{font-size:28px;line-height:1.4;margin:10px 0 6px;}
+	.sub{color:var(--muted);font-size:13.5px;}
+	.meta-line{color:var(--muted);font-size:12px;margin-top:6px;}
+	.toc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 22px;margin:26px 0 34px;font-size:13.5px;}
+	.toc h2{margin:0 0 8px;font-size:13px;color:var(--accent2);letter-spacing:.05em;}
+	.toc a{color:var(--ink);text-decoration:none;} .toc a:hover{color:var(--accent2);}
+	.toc ol{margin:4px 0 0;padding-left:22px;} .toc li{margin:3px 0;}
+	section{margin:0 0 44px;scroll-margin-top:16px;}
+	h2.sec{font-size:21px;border-bottom:2px solid var(--line);padding-bottom:10px;margin:0 0 20px;}
+	h2.sec .num{display:inline-block;background:var(--accent);color:#1a1205;border-radius:8px;padding:2px 12px;margin-right:12px;font-size:16px;font-weight:800;}
+	h3{font-size:16px;color:var(--accent2);margin:24px 0 9px;}
+	h4{font-size:14px;margin:16px 0 5px;}
+	p{margin:9px 0;} .muted{color:var(--muted);}
+	.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:14px 0;}
+	.grid2{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+	@media(max-width:760px){.grid2{grid-template-columns:1fr;}.wrap{padding:34px 15px 72px;}}
+	table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px;}
+	th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;}
+	th{background:var(--panel2);color:var(--accent2);font-weight:700;}
+	td.bad{color:#ff9aa2;} td.good{color:#87e0a0;}
+	.mermaid{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin:16px 0;text-align:center;}
+	ul,ol{margin:8px 0;padding-left:24px;} li{margin:5px 0;}
+	.callout{border-left:4px solid var(--accent);background:#1a2438;padding:13px 20px;border-radius:0 10px 10px 0;margin:14px 0;}
+	.callout.warn{border-left-color:var(--danger);background:#251720;}
+	.callout.ok{border-left-color:var(--ok);background:#15281d;}
+	.callout.q{border-left-color:var(--purple);background:#1e1a33;}
+	.tag{display:inline-block;font-size:11.5px;padding:2px 9px;border-radius:999px;margin:2px 3px 2px 0;}
+	.t-red{background:#3a1c22;color:#ff9aa2;border:1px solid #5e2a33;}
+	.t-amber{background:#3a2e16;color:#f3c878;border:1px solid #5e4a22;}
+	.t-green{background:#173324;color:#87e0a0;border:1px solid #285a3c;}
+	.t-blue{background:#16293f;color:#8fc1f0;border:1px solid #2c4d72;}
+	.t-purple{background:#221a3a;color:#c9b0f5;border:1px solid #3d2f66;}
+	code,.mono{font-family:"SF Mono","Consolas",ui-monospace,monospace;font-size:12.5px;background:#0e1826;border:1px solid var(--line);border-radius:5px;padding:1px 6px;}
+	pre{background:#0b1220;border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow:auto;font-size:12.5px;line-height:1.6;}
+	pre .mono{background:none;border:none;padding:0;}
+	footer{color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:16px;margin-top:36px;}
+	/* wireframe */
+	.wire{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:16px 0;background:#0b1220;font-size:11.5px;}
+	.w-top{background:#16243c;padding:7px 12px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center;}
+	.w-top .d{width:9px;height:9px;border-radius:3px;background:var(--accent);}
+	.w-body{display:grid;grid-template-columns:170px 1fr 200px;min-height:250px;}
+	.w-side{background:#0e1828;border-right:1px solid var(--line);padding:8px;}
+	.w-main{display:flex;flex-direction:column;}
+	.w-canvas{flex:1;padding:10px;background:linear-gradient(0deg,#0b1220,#0e1726);position:relative;}
+	.w-dock{height:52px;border-top:1px solid var(--line);background:#0e1828;padding:6px 8px;display:flex;gap:6px;align-items:flex-start;}
+	.w-detail{background:#0e1828;border-left:1px solid var(--line);padding:8px;}
+	.w-lbl{color:var(--muted);font-size:10px;letter-spacing:.06em;margin-bottom:6px;}
+	.w-box{border:1px solid var(--line);border-radius:7px;padding:5px 8px;margin:4px 0;background:#15233b;}
+	.w-box.task{border-top:2px solid #5b9be0;} .w-box.queue{border-top:2px solid #f0a830;} .w-box.var{border-top:2px solid #b18cf0;} .w-box.dev{border-top:2px solid #e8836b;}
+	.w-feat{border:1px solid var(--line);border-radius:7px;padding:5px 7px;margin:4px 0;background:#15233b;}
+	.w-feat.on{border-color:var(--accent2);}
+	.w-tab{border:1px solid var(--line);border-radius:6px 6px 0 0;padding:3px 8px;background:#15233b;color:var(--muted);}
+	.w-tab.on{background:#15233b;color:var(--ink);border-color:var(--accent2);}
+	.w-flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+	.w-arr{color:var(--muted);}
+	.rank{display:inline-block;min-width:22px;text-align:center;font-weight:800;color:var(--accent);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+	<header class="hero">
+		<div class="kicker">HANDOFF / RE-EXAMINATION BRIEF</div>
+		<h1>設計コックピット構想 — 検討まとめ &amp; 再検討用ブリーフ</h1>
+		<div class="sub">AIエージェント（Claude Code / Codex）時代の「単一ソース型 開発コックピット」新規事業構想。これまでの複数セッションの検討結果を統合し、<strong>別セッションでゼロから再検討・批判できる</strong>ことを目的とした引き継ぎ資料。</div>
+		<div class="meta-line">作成日: 2026-06-16 ／ 統合元: 当初フィジビリティ調査(2026-05-25改訂) + 事業性再検討 + 差別化再定義(v3) + UI/UX設計 + 拡張ビジョン ／ 関連: <code>business_plan_visual_ai_ide.html</code>, <code>cockpit_mockup.html</code>(動くUI)</div>
+	</header>
+
+	<div class="toc">
+		<h2>目次</h2>
+		<ol>
+			<li><a href="#s0">この資料の使い方（別セッションでの再検討方法）</a></li>
+			<li><a href="#s1">構想の現在地（1段落サマリ）</a></li>
+			<li><a href="#s2">背景と目的（最新・拡張ビジョン）</a></li>
+			<li><a href="#s3">これまでの結論（競合・市場）</a></li>
+			<li><a href="#s4">差別化の定義（2軸の掛け算）とSimulink論点</a></li>
+			<li><a href="#s5">プロダクト設計思想（4原則）とアーキテクチャ原則</a></li>
+			<li><a href="#s6">UI/UX メイン画面（データフロー・コックピット）</a></li>
+			<li><a href="#s7">事業性（需要・競合・収益）</a></li>
+			<li><a href="#s8">★未解決の論点（再検討してほしいこと）</a></li>
+			<li><a href="#s9">用語 / 参照</a></li>
+		</ol>
+	</div>
+
+	<!-- 0 -->
+	<section id="s0">
+		<h2 class="sec"><span class="num">0</span>この資料の使い方</h2>
+		<p>本資料は「結論を売り込む」ためではなく、<strong>前提から疑って再検討させる</strong>ために作った。特に <a href="#s8">§8 未解決の論点</a> が本体で、他は再検討の材料。別セッションで使う際の推奨プロンプト例：</p>
+		<pre><span class="mono">添付のHTML「設計コックピット構想 検討まとめ」を読み、賛成でなく<strong>批判的に</strong>再検討してほしい。
+特に §8 の未解決論点を1つずつ、私の結論が誤っている可能性を前提に検証して。
+最重要は「特化(組込み) と 全タスク統一UI の戦略的緊張」。一人開発・年1000万円・低サポート
+という制約下で、この構想のどこが最も破綻しやすいか、忖度なしで指摘して。</span></pre>
+		<div class="callout warn"><strong>再検討者への注意：</strong> この構想は数セッションで「拡張」を続けており、<strong>スコープが膨張気味</strong>。当初は「組込み特化で絞る」が結論だったが、直近で「全タスクを一つのUIで」へ拡大している(§2)。この矛盾は意図的に未解決のまま残してある。是正すべきか、両立できるかを問うのが再検討の主眼。</div>
+	</section>
+
+	<!-- 1 -->
+	<section id="s1">
+		<h2 class="sec"><span class="num">1</span>構想の現在地（1段落サマリ）</h2>
+		<div class="card">
+			<p style="margin:0">Claude Code / Codex などのAIエージェントで開発・資料作成・業務自動化を行う際、<strong>「設計意図・現状のコード構成・動作・テスト・エージェントの記憶層(ルール)」が単一のライブな真実として1画面で可視化されない</strong>ことが痛み。これを、<strong>フォルダ＋ファイルで構成された移植可能な基幹（＝単一ソース）</strong>の上に、<strong>タスク⇄キュー⇄変数のデータフローを主画面としたコックピットUI</strong>を被せて解く。AIと人間が同じ盤面を見て、自然言語指示から仕様書・設計書を自動生成し、実装・動作・テスト結果まで同一画面で追える。組込み(STM32/FreeRTOS)を最初のドメインモジュールとしつつ、殻は他ドメインへ差替可能にする。</p>
+		</div>
+	</section>
+
+	<!-- 2 -->
+	<section id="s2">
+		<h2 class="sec"><span class="num">2</span>背景と目的（最新・拡張ビジョン）</h2>
+		<p class="muted">直近セッションで示された、当初レポートより<strong>広い</strong>ビジョン。§3〜§7の「組込み特化」結論とは緊張関係にある（→ §8で要再検討）。</p>
+
+		<h3>背景</h3>
+		<div class="grid2">
+			<div class="card">
+				<h4>① 全タスクを一つのUIで</h4>
+				<p>Claude Code / Codex による<strong>アプリ開発・資料づくり・ビジネス導線の自動化など、あらゆるタスクを、ひとつのアプリ（またはHTMLのような単一UI画面）上で</strong>完結させたい。ツール/コンソール/ファイルを行き来する認知負荷をなくす。</p>
+			</div>
+			<div class="card">
+				<h4>② 基幹はフォルダ＋ファイルで移植可能に</h4>
+				<p>OSや、将来類似アプリが出た際にも移植できるよう、<strong>基幹システムはフォルダとファイルで構成</strong>する。<strong>基幹をアプリに閉じ込めて移植不能にしない</strong>（UIは基幹の上に乗る"表示層"に留める）。＝ ベンダーロックイン回避・長寿命化の設計思想。</p>
+			</div>
+		</div>
+
+		<h3>目的</h3>
+		<table>
+			<thead><tr><th style="width:34%">目的</th><th>意味 / 補足</th></tr></thead>
+			<tbody>
+				<tr><td><strong>単一ソースで現状のコード構成・動作・テストを可視化</strong></td><td>散在ファイル/コンソールでなく、1つの真実から構造・動作・テストを常時描画。状況把握レポートの乱造を撲滅。</td></tr>
+				<tr><td><strong>自然言語指示＋現状コードから仕様書・設計書を自動生成</strong></td><td>AIへの指示内容と実コードを突き合わせ、<strong>仕様書/設計書を自動生成・追従更新</strong>。ドキュメントを"別作業"にしない。</td></tr>
+				<tr><td><strong>AIの実装 vs 現状コードの詳細な動作・テスト結果を可視化</strong></td><td>エージェントが実装した内容と現状の差分・動作・テスト結果を同一画面で確認。＝ ドリフト検出＋検証統合。</td></tr>
+				<tr><td><strong>自動で最適構成（※要具体化）</strong></td><td class="bad">「自動で最適構成を提案/生成」。現状もっとも曖昧で、実現可能性の検証が必要（→§8）。</td></tr>
+			</tbody>
+		</table>
+
+		<div class="mermaid">
+flowchart TB
+	NL["自然言語指示<br>(人間)"] --> CORE
+	CODE["現状のソースコード"] --> CORE
+	subgraph CORE["基幹＝単一ソース（フォルダ＋ファイル / 移植可能）"]
+		SPEC["spec / design docs<br>(自動生成・追従)"]
+		RULES["記憶層ルール"]
+		STRUCT["構造・動作・テスト状態"]
+	end
+	CORE --> UI["単一UI画面（コックピット）<br>全タスクをここで完結"]
+	UI <--> AGENT["Claude Code / Codex"]
+	AGENT --> CODE
+	CORE -. "移植" .-> OTHER["別OS / 将来の類似アプリ"]
+	classDef c fill:#16293f,stroke:#4fd1c5,color:#cfeefa;
+	class SPEC,RULES,STRUCT c;
+		</div>
+	</section>
+
+	<!-- 3 -->
+	<section id="s3">
+		<h2 class="sec"><span class="num">3</span>これまでの結論（競合・市場）</h2>
+		<ol>
+			<li><strong>「統合体は存在しない」は不正確。</strong> マスター図→実装→テスト→検証→セキュリティの統合は、組込みでは <strong>MBD/MBSE（Simulink/Stateflow＋Embedded Coder＋Polyspace＋Test）として20年来成熟</strong>。概念の市場性は実証済み。</li>
+			<li><strong>本当の空白＝4条件の同時成立。</strong> (a) 汎用LLMエージェントが任意コードを書く<strong>AIネイティブ</strong>、(b) 制御則でなく通信/プロトコル/アプリも含む<strong>汎用</strong>、(c) 個人/中小が買える<strong>安価軽量</strong>、(d) 検証/テスト/セキュリティを<strong>1モデルに統合</strong>。各社は一部しか満たさない。</li>
+			<li><strong>競合は6カテゴリに跨る</strong>：①汎用ビジュアルPL(歴史的に失敗多)②コード可視化(収益化難)③仕様駆動開発SDD(超激戦/Web中心)④ビジュアル⇔コード双方向(新興・先行者あり)⑥MBD/MBSE(既存王者)。<strong>SMB組込み目線では PlatformIO が実質インカンベント</strong>（競合でなく統合先候補）。</li>
+			<li><strong>タイミング：</strong> MathWorksが2026-04にMBSE×エージェントAIへ着手＝王者参入前に楔を打つ必要。</li>
+		</ol>
+		<div class="mermaid">
+flowchart LR
+	A["①汎用ビジュアルPL"] --> B["②コード可視化"] --> C["③SDD(激戦/Web)"] --> D["④ビジュアル⇔コード"] --> E["⑥MBD/MBSE(王者)"] --> GAP
+	GAP["★空白＝楔★<br>AIネイティブ × 汎用(通信/プロトコル)<br>× 安価軽量 × 検証統合"]
+	classDef k fill:#3a2a16,stroke:#f0a830,color:#f7d79a;
+	classDef g fill:#16332a,stroke:#5fd07a,color:#a8f0c0;
+	class E k; class GAP g;
+		</div>
+	</section>
+
+	<!-- 4 -->
+	<section id="s4">
+		<h2 class="sec"><span class="num">4</span>差別化の定義（2軸の掛け算）とSimulink論点</h2>
+		<div class="callout ok"><strong>差別化テーゼ（確定版）：</strong> AIと人間が「単一のライブな真実」を共有し内部構造を正確に指定 → 実装・動作・テストが常に1枚の階層ダッシュボードに正しく可視化。＝レポートを別途作らせない／記憶層(ルール)も見えて編集できる／動作・テストも同ソースから出る。</div>
+		<h3>差別化は2軸の掛け算（混ぜると弱くなる）</h3>
+		<table>
+			<thead><tr><th style="width:16%">軸</th><th>中身</th><th style="width:32%">役割</th></tr></thead>
+			<tbody>
+				<tr><td><strong>能力軸</strong></td><td>単一ライブソース型コックピット（§5の4原則）。<strong>本当の発明</strong>。LLM普及で初めて生まれた痛み（ドリフト/レポート乱造/記憶層の腐敗）を解く。</td><td class="good">なぜ選ばれるか。ただし横断的痛み＝水平勢と同じ海。</td></tr>
+				<tr><td><strong>堀軸</strong></td><td>特定ドメインの内部構造を"正確に指定"できる縦深＋創業者の専門資産（組込み: STM32/FreeRTOS/LwIP/Modbus）。</td><td class="good">なぜ大手に潰されないか。Webは構造が緩く価値が薄い＝組込みで跳ねる。</td></tr>
+			</tbody>
+		</table>
+		<h3>Simulink論点の正確化（専門家に崩されない言い方）</h3>
+		<p class="muted">「Simulinkのコード生成は黒箱だから差別化」は誤り（model→Cはブロック単位でトレース可・sim一致が売り）。正しくは下表。</p>
+		<table>
+			<thead><tr><th style="width:32%">レイヤ</th><th>Simulink</th><th>本構想</th></tr></thead>
+			<tbody>
+				<tr><td>論理 model→C</td><td class="good">透明・トレース可（強み）</td><td>同等は狙わない（敬意）</td></tr>
+				<tr><td>物理 C→バイナリの実現構造</td><td class="bad">モデルに映らない（不可視）</td><td class="good">実現された内部構造をライブに映す</td></tr>
+				<tr><td>モデル外(手書き/糊/統合後)</td><td class="bad">単一画面に載らない</td><td class="good">手書き＋AI生成を含む全体を1ソースに</td></tr>
+				<tr><td>AIエージェント</td><td class="bad">不在（決定論生成）</td><td class="good">LLM前提。ドリフト/レポート/記憶層まで対応</td></tr>
+			</tbody>
+		</table>
+	</section>
+
+	<!-- 5 -->
+	<section id="s5">
+		<h2 class="sec"><span class="num">5</span>プロダクト設計思想（4原則）とアーキテクチャ原則</h2>
+		<div class="grid2">
+			<div class="card"><h4>① モジュール式・成果物に合わせ入替</h4><p>「殻(shell)＋ドメインモジュール」の二層。v0は組込みモジュール。殻は将来Web/他へ差替可。＝ 能力軸(殻)×堀軸(モジュール)の具現化＋需要が薄ければモジュール差替で延命。</p></div>
+			<div class="card"><h4>② ルールのカード化・インタラクティブ</h4><p>記憶層の全ルール/制約をカード化。出典・矛盾・陳腐化を可視化し、有効化/変更/削除を直接操作。＝ 既存ツールが構造的に持たない"記憶層インスペクタ"。</p></div>
+			<div class="card"><h4>③ 仕様のシングルソース管理UI</h4><p>仕様=単一の真実。動作状況・テスト結果も同ソースから派生表示。別ファイルに散らさない。＝ 状況把握レポートの乱造撲滅。</p></div>
+			<div class="card"><h4>④ グリッドUIで整然配置</h4><p>各ペインをグリッド配置（ドラッグ/リサイズ）。1画面でAIと人間が同じ盤面を操作。</p></div>
+		</div>
+		<h3>アーキテクチャ原則（拡張ビジョン由来）</h3>
+		<div class="callout">
+			<ul style="margin:4px 0">
+				<li><strong>基幹＝フォルダ＋ファイル（移植可能）：</strong> 単一ソースの実体は <code>spec.yaml</code> / <code>rules/*.md</code> / <code>design/*.md</code> 等の<strong>プレーンファイル</strong>。UIはその<strong>表示・編集層</strong>に過ぎない。基幹をアプリバイナリに閉じ込めない＝ロックイン回避・長寿命。</li>
+				<li><strong>UIはレンダラ：</strong> 単一UI画面（アプリ or HTML）は基幹ファイルを描画/操作するだけ。別OS・将来の類似アプリでも同じ基幹を読めば移植成立。</li>
+				<li><strong>modular-ready, not modular-now：</strong> モジュールAPIだけ設計し、v0で作るのは1モジュールのみ（一人開発の完成性を守る）。</li>
+			</ul>
+		</div>
+	</section>
+
+	<!-- 6 -->
+	<section id="s6">
+		<h2 class="sec"><span class="num">6</span>UI/UX メイン画面（データフロー・コックピット）</h2>
+		<p>メイン画面は<strong>タスク ⇄ キュー ⇄ 共有変数のデータフロー・キャンバス</strong>。左サイドバー=機能フロー、右=詳細、下=ドック。インタラクティブ版は <code>cockpit_mockup.html</code>。以下は画面レイアウトのワイヤーフレーム。</p>
+
+		<div class="wire">
+			<div class="w-top"><span class="d"></span><b style="font-size:11px">設計コックピット</b><span style="color:var(--muted)">📦 EnergyBox · 🧩組込み(STM32/FreeRTOS) · ●LIVE単一ソース · ⚠drift 1</span></div>
+			<div class="w-body">
+				<div class="w-side">
+					<div class="w-lbl">機能フロー / FEATURE FLOWS</div>
+					<div class="w-feat on">📐 計測 <span style="color:var(--muted)">100ms ✓2/2</span></div>
+					<div class="w-feat">🛠 制御 <span style="color:var(--muted)">event ✓2/2</span></div>
+					<div class="w-feat" style="border-color:#5e2a33">📡 テレメトリ <span style="color:#ff9aa2">60s ✗1/2</span></div>
+					<div class="w-feat">🌐 通信 <span style="color:var(--muted)">event ✓3/3</span></div>
+					<div class="w-lbl" style="margin-top:10px">選択で該当フロー強調＋説明＋テスト結果</div>
+				</div>
+				<div class="w-main">
+					<div class="w-canvas">
+						<div class="w-lbl">データフロー・キャンバス（20pxグリッド / ドラッグ移動）</div>
+						<div class="w-flow">
+							<span class="w-box dev">🔋電力計<br>RS485</span><span class="w-arr">─100ms→</span>
+							<span class="w-box task">⚙modbus_task<br>prio3/100ms</span><span class="w-arr">─Meas_t→</span>
+							<span class="w-box queue">📨q_meas<br>×8</span><span class="w-arr">→</span>
+							<span class="w-box task">⚙telemetry<br>30s⚠</span><span class="w-arr">─TxMsg→</span>
+							<span class="w-box task">⚙net_task</span><span class="w-arr">→</span>
+							<span class="w-box">☁Azure</span>
+						</div>
+						<div class="w-lbl" style="margin-top:8px">変数/構造体はクリックでメンバー展開・折りたたみ／タスクはクリックで while(1) 処理を右に表示</div>
+						<div class="w-flow"><span class="w-box var">▤g_config<br>telem_period_s=60</span><span class="w-arr">─period→ telemetry（実装30s ≠ 仕様60s＝drift）</span></div>
+					</div>
+					<div class="w-dock">
+						<span class="w-tab on">📋変数/キュー一覧</span><span class="w-tab">🗂️ルール</span><span class="w-tab">🐞CCAFデバッグ</span>
+					</div>
+				</div>
+				<div class="w-detail">
+					<div class="w-lbl">詳細ペイン</div>
+					<div class="w-box">telemetry_task<br><span style="color:var(--muted)">prio1 / 30s⚠</span></div>
+					<div class="w-box">while(1): receive→<br>period判定(30s⚠)→<br>build_json→send</div>
+					<div class="w-box">読み: q_meas, g_config<br>書き: q_tx</div>
+					<div class="w-box" style="border-color:var(--accent2)">▷ AIに確認・指示<br><span style="color:var(--muted)">「周期を仕様60sに」</span></div>
+				</div>
+			</div>
+		</div>
+
+		<h3>主要インタラクション（導線）</h3>
+		<ul>
+			<li><strong>機能フロー選択（左）</strong>→ 該当サブフローを強調（他は減光）＋説明＋テスト結果を表示。＝「全体像を見ながら機能単位で確認・指示」。</li>
+			<li><strong>ノード操作（中）</strong>→ ドラッグで再配置(グリッド吸着)／構造体クリックでメンバー展開／タスククリックで処理内容を右に。</li>
+			<li><strong>リソースデバイス＋制御周期</strong>を表示（電力計/RS485, Ethernet PHY, poll 100ms, gate 60s 等）。</li>
+			<li><strong>詳細ペイン下の指示ボックス</strong>→ 選択中コンポーネントへ自然言語でAI指示。</li>
+			<li><strong>下部ドック</strong>→ 変数/キュー一覧・ルール(記憶層)・CCAFデバッグ(エージェント運用追跡)を切替。</li>
+		</ul>
+	</section>
+
+	<!-- 7 -->
+	<section id="s7">
+		<h2 class="sec"><span class="num">7</span>事業性（需要・競合・収益）</h2>
+		<h3>狙う顧客：大手が来ない"小さく強い"ゾーン</h3>
+		<p>giantが構造的に来ない交点＝<strong>安価 × 非MATLAB × 縦深(組込み) × AIエージェント補完</strong>。買い手は個人でも大企業でもなく<strong>小さな商用ショップ</strong>（小規模ファーム/IoT受託、独立コンサル、ハード系スタートアップ）。ビジネスゆえ払い、小さいゆえセルフサーブで完結し、大手の射程外。</p>
+		<h3>未解決の顧客課題（＝需要の本体）</h3>
+		<table>
+			<thead><tr><th>#</th><th>未解決課題</th><th style="width:14%">課金力</th></tr></thead>
+			<tbody>
+				<tr><td>①</td><td>AIがハード/プロトコル文脈を保持できずドリフト（レジスタ/初期化順/タスク優先度/フレーミング）</td><td class="good">高</td></tr>
+				<tr><td>②</td><td>安価な"設計の単一の真実"が組込みに無い（AIが読み書きできる形で）</td><td class="good">高</td></tr>
+				<tr><td>③</td><td>AI生成ファームの検証手段が無い（小ショップはPolyspace不可）</td><td>中〜高</td></tr>
+				<tr><td>④</td><td>受託/コンサルの案件切替コンテキスト喪失（生きた視覚スペック＝オンボ資料）</td><td class="good">高</td></tr>
+			</tbody>
+		</table>
+		<h3>収益：セルフサーブのブレンド（¥10M/年 ≒ $5.4K MRR）</h3>
+		<table>
+			<thead><tr><th>シナリオ</th><th>構成</th><th>MRR</th></tr></thead>
+			<tbody>
+				<tr><td>純個人(脆い)</td><td>$49 × 110人</td><td class="bad">$5,390（解約/無料文化で困難）</td></tr>
+				<tr><td><strong>ブレンド(推奨)</strong></td><td>$49×40人 ＋ $159×22ショップ</td><td class="good">$5,458（解約分散・全部セルフサーブ）</td></tr>
+				<tr><td>ショップ寄せ</td><td>$159 × 35ショップ</td><td class="good">$5,565</td></tr>
+			</tbody>
+		</table>
+		<p class="muted">価格ラダー：無料/OSSコア（配布・build-in-public）→ Pro $39–59（個人）→ Shop $149–249（2–10人）。堀＝創業者の専門知を"プロトコル/検証プロファイル資産"として毎月積む（複利）。</p>
+	</section>
+
+	<!-- 8 -->
+	<section id="s8">
+		<h2 class="sec"><span class="num">8</span>★未解決の論点（再検討してほしいこと）</h2>
+		<p>本資料の中核。<strong>順位は「事業を殺す可能性の高い順」</strong>。再検討者は各項を「結論が誤っている前提」で叩いてほしい。</p>
+
+		<div class="callout q"><span class="rank">1</span><strong>特化(組込み) と 全タスク統一UI の戦略的緊張【最重要】</strong><br>§3〜§7は「一人開発・低サポート・年1000万で成立させるには<strong>絞れ</strong>」と結論。しかし§2の拡張ビジョンは「<strong>全タスクを一つのUIで</strong>」と広げる。これは制約矛盾の再燃。<strong>問い：</strong> 殻(汎用)＋モジュール(特化)で両立するのか、それとも拡張ビジョンは一人開発を破綻させる罠か。どちらかに倒すべきか。</div>
+
+		<div class="callout q"><span class="rank">2</span><strong>需要の実在（組込み×AIエージェント採用層の薄さ）</strong><br>楔は「Simulinkの死角(汎用ファーム/プロトコル)×AIエージェント」。だが組込み層は<strong>AIコーディング最遅採用層</strong>の可能性。TAM＝「AIエージェントを日常使い×ドリフトに痛み×払う」組込み者は薄いかも。＝ 最初に潰すべき仮説。</div>
+
+		<div class="callout q"><span class="rank">3</span><strong>「自動で最適構成」の実現可能性が曖昧</strong><br>§2目的の一つだが定義が未確定。何を"最適"とし、何を入力に、どう検証するのか。誇大機能になりやすい。スコープから外すか、具体的な小問題に落とすべき。</div>
+
+		<div class="callout q"><span class="rank">4</span><strong>双方向同期（コード⇔図/仕様）の技術的難所</strong><br>図→コードは容易だが、人が書いたコードを図/仕様へ正確に戻す逆方向はAST/意味解析が必要で破綻しやすい。v0は「設計した部分だけ片方向＋drift検出」に割り切る案だが、"現状コードの可視化"(§2)と両立するか要検証。</div>
+
+		<div class="callout q"><span class="rank">5</span><strong>v0の主役ペイン未確定</strong><br>候補：①構造/データフロー可視化（デモ一目瞭然・慣性に勝ちやすい）②記憶層ルールカード（新規性最高だが教育コスト）。1つに絞ればv0スコープが締まる。<strong>未決。</strong></div>
+
+		<div class="callout q"><span class="rank">6</span><strong>スペック形式（単一ソースのスキーマ）未定</strong><br>基幹＝ファイルなら、その<code>spec.yaml</code>のスキーマが全ペインの土台。構造/動作/テスト/ルールをどう1形式で表すか。ここを決めないと全機能が浮く。</div>
+
+		<div class="callout q"><span class="rank">7</span><strong>収益モデル：法人少数(高単価) vs 小ショップ(セルフサーブ)</strong><br>低サポート制約とは小ショップ・セルフサーブが整合的だが、"開発者は払わない"逆風と低ACVの解約面リスク。ブレンドが妥当か、Shop単価$159が現実的か要検証。</div>
+
+		<div class="callout q"><span class="rank">8</span><strong>移植可能な基幹 と リッチUIの両立コスト</strong><br>「基幹はプレーンなファイル、UIは表示層」は美しいが、リッチな操作・ライブ描画を薄い表示層で実現するのは実装負荷大。一人開発で成立する境界線はどこか。</div>
+
+		<h4 style="margin-top:22px">今週できる最小検証（コストほぼゼロ・再掲）</h4>
+		<ol>
+			<li>自分のEnergyBox開発で、状態機械＋Modbusマップを1枚の図で定義→YAML化→Claude Codeに渡す、を手作業で1回（人力プロトタイプ）。効果を体感・計測。</li>
+			<li>Simulink/Embedded Coderを実評価し「Simulinkでは作れない/割に合わない部分」を箇条書き（＝差別化仕様の核）。Atlarix/Kiro/Eraserも触る。</li>
+			<li>r/embedded等で「複数案件を掛け持ちして、AIに毎回ハード文脈を説明し直すのが地獄な受託/コンサルの人いる?」(§7課題④直撃)。LP＋事前登録20件を需要閾値に。</li>
+		</ol>
+	</section>
+
+	<!-- 9 -->
+	<section id="s9">
+		<h2 class="sec"><span class="num">9</span>用語 / 参照</h2>
+		<div class="grid2">
+			<div class="card"><h4>用語</h4><ul style="font-size:13px">
+				<li><span class="tag t-blue">implementation drift</span> 実装が設計/仕様から逸れる現象</li>
+				<li><span class="tag t-blue">SDD</span> 仕様駆動開発。仕様を真実・コードを生成物とみなす</li>
+				<li><span class="tag t-blue">MBD/MBSE</span> モデルベース開発/システムズエンジニアリング（Simulink系）</li>
+				<li><span class="tag t-blue">記憶層</span> エージェントのルール/制約/コンテキスト(CLAUDE.md, steering files等)</li>
+				<li><span class="tag t-blue">CCAF</span> 本ユーザーのAIエージェント運用フレームワーク（そのデバッグが主要ユースケース）</li>
+				<li><span class="tag t-blue">殻/モジュール</span> 汎用コックピット(shell)＋差替可能なドメインモジュール</li>
+			</ul></div>
+			<div class="card"><h4>関連ファイル / 参照</h4><ul style="font-size:13px">
+				<li><code>business_plan_visual_ai_ide.html</code> — 当初フィジビリティ調査＋v3追補（詳細版）</li>
+				<li><code>cockpit_mockup.html</code> — 動くUIモックアップ（データフロー/機能フロー/グリッド）</li>
+				<li>主な調査参照: MathWorks公式(Embedded Coder/Polyspace/Simulink Test), "MBSE and Agentic AI"(2026-04), GitHub Spec Kit / AWS Kiro / Tessl(SDD), Atlarix/Eraser/D2(ビジュアル⇔コード), PlatformIO, micro-SaaS収益分布(Indie Hackers系)</li>
+			</ul></div>
+		</div>
+	</section>
+
+	<footer>
+		設計コックピット構想 — 検討まとめ / 再検討用ブリーフ ／ 作成日 2026-06-16 ／ 目的: 別セッションでの批判的再検討。<br>
+		※ 市場・資金調達・製品仕様は変化が速い。意思決定前に各社最新情報の再確認を。投資・法務判断は専門家へ。
+	</footer>
+</div>
+</body>
+</html>
